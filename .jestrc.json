@@ -1,0 +1,10 @@
+{
+  "clearMocks": true,
+  "collectCoverage": true,
+  "coverageDirectory": "coverage",
+  "coverageProvider": "v8",
+  "testRegex": "(/tests/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
+  "transform": {
+    "^.+\\.(t|j)sx?$": "ts-jest"
+  }
+}
