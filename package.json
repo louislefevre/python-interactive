@@ -32,6 +32,9 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint"
   },
+  "dependencies": {
+    "dedent-js": "^1.0.1"
+  },
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@typescript-eslint/eslint-plugin": "^4.28.4",

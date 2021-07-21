@@ -46,8 +46,8 @@ describe('Start and stop Python process', () => {
   });
 
   test('Start_AliveProcess_DoNothing', () => {
-    const process = python.pythonProcess;
-    const script = python.script;
+    let process = python.pythonProcess;
+    let script = python.script;
     python.start();
     expect(python.pythonProcess).toBe(process);
     expect(python.script).toBe(script);
@@ -60,17 +60,24 @@ describe('Start and stop Python process', () => {
     expect(python.script).toBe('');
   });
 
+  test('Start_NewProcess_ReturnWelcomeMessage', async () => {
+    python.stop();
+    let output = await python.start();
+
+    expect(output).toMatch(/^Python 3./);
+  });
+
   test('Stop_KilledProcess_DoNothing', () => {
     python.stop();
-    const process = python.pythonProcess;
-    const script = python.script;
+    let process = python.pythonProcess;
+    let script = python.script;
     python.stop();
     expect(python.pythonProcess).toBe(process);
     expect(python.script).toBe(script);
   });
 
   test('Stop_AliveProcess_KillProcess', () => {
-    const script = python.script;
+    let script = python.script;
     python.stop();
     expect(python.pythonProcess).toBe(null);
     expect(python.script).toBe(script);
@@ -84,10 +91,71 @@ describe('Start and stop Python process', () => {
   });
 
   test('Restart_AliveProcess_KillThenSpawnProcess', () => {
-    const process = python.pythonProcess;
-    const script = python.script;
+    let process = python.pythonProcess;
+    let script = python.script;
     python.restart();
     expect(python.pythonProcess).not.toBe(process);
     expect(python.script).not.toBe(script);
   });
+
+  test('Restart_NewProcess_ReturnWelcomeMessage', async () => {
+    let output = await python.restart();
+
+    expect(output).toMatch(/^Python 3./);
+  });
 });
+
+describe('Execute commands', () => {
+  let python: PythonInteractive; 
+  beforeEach(async () => {
+    python = new PythonInteractive();
+    await python.start();
+  });
+  afterEach(() => {
+    python.stop();
+  });
+
+  test('Execute_Empty_ReturnEmptyString', async () => {
+    let output = await python.execute();
+    expect(output).toBe('');
+  });
+
+  test('Execute_StatementCommand_ReturnOutput', async () => {
+    let output = await python.execute('print("Test")');
+    expect(output).toBe('Test');
+  });
+
+  test('Execute_ExpressionCommand_ReturnResult', async () => {
+    let output = await python.execute('10 + 10');
+    expect(output).toBe('20');
+  });
+
+  test('Execute_NoOutputStatementCommand_ReturnEmptyString', async () => {
+    let output = await python.execute('x = 10');
+    expect(output).toBe('');
+  });
+
+  test('Execute_MultipleStatementCommand_ReturnResult', async () => {
+    let output = await python.execute('x = 10; print(x)');
+    expect(output).toBe('10');
+  });
+
+  test('Execute_SequentialCommands_ReturnResult', async () => {
+    await python.execute('x = 10');
+    let output = await python.execute('print(x)');
+    expect(output).toBe('10');
+  });
+
+  // TODO: Fix this test - it will sometimes (seemingly non-deterministically) fail
+  test('Execute_BlockCommand_ReturnResult', async () => {
+    expect.assertions(1);
+    let input = `
+    if True:
+      x = 10
+      print(x)
+
+    `;
+    let output = await python.execute(input);
+    expect(output).toBe('10');
+  });
+})
