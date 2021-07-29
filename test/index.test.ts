@@ -146,7 +146,6 @@ describe('Execute commands', () => {
     expect(output).toBe('10');
   });
 
-  // TODO: Fix this test - it will sometimes (seemingly non-deterministically) fail
   test('Execute_BlockCommand_ReturnResult', async () => {
     expect.assertions(1);
     let input = `
