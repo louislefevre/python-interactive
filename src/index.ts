@@ -16,10 +16,6 @@ export class PythonInteractive {
   async start(): Promise<string> {
     if (!this.pythonProcess) {
       this.pythonProcess = spawn(this.pythonPath, ['-i', '-u']);
-      if (this.pythonProcess.stdout && this.pythonProcess.stderr) {
-        this.pythonProcess.stdout.setEncoding('utf8');
-        this.pythonProcess.stderr.setEncoding('utf8');
-      }
       this.script = '';
     }
     return this.execute().catch((err) => err);
@@ -27,10 +23,10 @@ export class PythonInteractive {
 
   stop(): void {
     if (this.pythonProcess) {
+      if (this.pythonProcess.stdin) this.pythonProcess.stdin.destroy();
+      if (this.pythonProcess.stdout) this.pythonProcess.stdout.destroy();
+      if (this.pythonProcess.stderr) this.pythonProcess.stderr.destroy();
       this.pythonProcess.kill();
-      if (this.pythonProcess.stdin) {
-        this.pythonProcess.stdin.end();
-      }
       this.pythonProcess = null;
     }
   }
@@ -66,6 +62,7 @@ export class PythonInteractive {
       let outputData = '';
       let errorData = '';
 
+      stdout.setEncoding('utf8');
       stdout.on('data', function (data) {
         let done = false;
 
@@ -89,6 +86,7 @@ export class PythonInteractive {
         }
       });
 
+      stderr.setEncoding('utf8');
       stderr.on('data', function (data) {
         if (data.includes('>>>')) {
           data = data.replace(/>>>/g, '');
