@@ -47,9 +47,13 @@ describe('Start Python process', () => {
 
   test('Start_AliveProcess_DoNothing', () => {
     let process = python.pythonProcess;
-    let script = python.script;
     python.start();
     expect(python.pythonProcess).toBe(process);
+  });
+
+  test('Start_AliveProcess_MaintainScript', () => {
+    let script = python.script;
+    python.start();
     expect(python.script).toBe(script);
   });
 
@@ -57,6 +61,11 @@ describe('Start Python process', () => {
     python.stop();
     python.start();
     expect(python.pythonProcess).not.toBe(null);
+  });
+
+  test('Start_KilledProcess_ResetScript', () => {
+    python.stop();
+    python.start();
     expect(python.script).toBe('');
   });
 
@@ -81,16 +90,25 @@ describe('Stop Python process', () => {
   test('Stop_KilledProcess_DoNothing', () => {
     python.stop();
     let process = python.pythonProcess;
-    let script = python.script;
     python.stop();
     expect(python.pythonProcess).toBe(process);
+  });
+
+  test('Stop_KilledProcess_MaintainScript', () => {
+    python.stop();
+    let script = python.script;
+    python.stop();
     expect(python.script).toBe(script);
   });
 
   test('Stop_AliveProcess_KillProcess', () => {
-    let script = python.script;
     python.stop();
     expect(python.pythonProcess).toBe(null);
+  });
+
+  test('Stop_AliveProcess_MaintainScript', () => {
+    let script = python.script;
+    python.stop();
     expect(python.script).toBe(script);
   });
 });
@@ -110,15 +128,23 @@ describe('Restart Python process', () => {
     python.stop();
     python.restart();
     expect(python.pythonProcess).not.toBe(null);
+  });
+
+  test('Restart_KilledProcess_ResetScript', () => {
+    python.stop();
+    python.restart();
     expect(python.script).toBe('');
   });
 
   test('Restart_AliveProcess_KillThenSpawnProcess', () => {
     let process = python.pythonProcess;
-    let script = python.script;
     python.restart();
     expect(python.pythonProcess).not.toBe(process);
-    expect(python.script).not.toBe(script);
+  });
+
+  test('Restart_AliveProcess_ResetScript', () => {
+    python.restart();
+    expect(python.script).toBe('');
   });
 
   test('Restart_NewProcess_ReturnWelcomeMessage', async () => {
