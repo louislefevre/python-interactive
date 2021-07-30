@@ -62,24 +62,25 @@ export class PythonInteractive {
     return new Promise((resolve, reject) => {
       if (!stdout) {
         throw new Error('Failed to read from standard output stream');
-      } if (!stderr) {
+      } else if (!stderr) {
         throw new Error('Failed to read from standard error stream');
       }
 
       let outputData = '';
       let errorData = '';
-  
-      stdout.on('data', function(data) {
+
+      stdout.on('data', function (data) {
         let done = false;
-  
+
         if (data.match(/#CommandStart#/)) {
           data = data.replace(/#CommandStart#/, '');
-        } if (data.match(/#CommandEnd#/)) {
+        }
+        if (data.match(/#CommandEnd#/)) {
           data = data.replace(/#CommandEnd#/, '');
           done = true;
         }
         outputData += data;
-  
+
         if (done) {
           stdout.removeAllListeners();
           stderr.removeAllListeners();
@@ -90,11 +91,12 @@ export class PythonInteractive {
           }
         }
       });
-  
-      stderr.on('data', function(data) {
+
+      stderr.on('data', function (data) {
         if (data.includes('>>>')) {
           data = data.replace(/>>>/g, '');
-        } if (data.includes('...')) {
+        }
+        if (data.includes('...')) {
           data = data.replace(/.../g, '');
         }
 
