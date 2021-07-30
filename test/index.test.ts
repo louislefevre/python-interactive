@@ -137,33 +137,33 @@ describe('Execute Commands', () => {
 
   describe('Valid', () => {
     test('Execute_Empty_ReturnEmptyString', async () => {
-      let output = await python.execute().then((data) => data);
+      let output = await python.execute();
       expect(output).toBe('');
     });
   
     test('Execute_StatementCommand_ReturnOutput', async () => {
-      let output = await python.execute('print("Test")').then((data) => data);
+      let output = await python.execute('print("Test")');
       expect(output).toBe('Test');
     });
   
     test('Execute_ExpressionCommand_ReturnResult', async () => {
-      let output = await python.execute('10 + 10').then((data) => data);
+      let output = await python.execute('10 + 10');
       expect(output).toBe('20');
     });
   
     test('Execute_NoOutputStatementCommand_ReturnEmptyString', async () => {
-      let output = await python.execute('x = 10').then((data) => data);
+      let output = await python.execute('x = 10');
       expect(output).toBe('');
     });
   
     test('Execute_MultipleStatementCommand_ReturnResult', async () => {
-      let output = await python.execute('x = 10; print(x)').then((data) => data);
+      let output = await python.execute('x = 10; print(x)');
       expect(output).toBe('10');
     });
   
     test('Execute_SequentialCommands_ReturnResult', async () => {
       await python.execute('x = 10');
-      let output = await python.execute('print(x)').then((data) => data);
+      let output = await python.execute('print(x)');
       expect(output).toBe('10');
     });
   
@@ -174,7 +174,7 @@ describe('Execute Commands', () => {
         print(x)
 
       `;
-      let output = await python.execute(input).then((data) => data);
+      let output = await python.execute(input);
       expect(output).toBe('10');
     });
   });
