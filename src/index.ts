@@ -1,9 +1,6 @@
 import { spawn, ChildProcess } from 'child_process';
-import { platform } from 'os';
 import { Readable, Writable } from 'stream';
 import dedent = require('dedent-js');
-
-const defaultPythonPath = platform() === 'win32' ? 'python3' : 'python';
 
 export class PythonInteractive {
   readonly pythonPath: string;
@@ -11,7 +8,7 @@ export class PythonInteractive {
   script: string;
 
   constructor(pythonPath?: string) {
-    this.pythonPath = pythonPath ?? defaultPythonPath;
+    this.pythonPath = pythonPath ?? 'python3';
     this.pythonProcess = null;
     this.script = '';
   }

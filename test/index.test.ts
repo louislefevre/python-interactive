@@ -21,7 +21,7 @@ afterEach(() => {
 
 describe('Initialise PythonInteractive', () => {
   test('PythonPath_IsDefault_EqualDefaultPath', () => {
-    expect(python.pythonPath).toBe('python' || 'python3');
+    expect(python.pythonPath).toBe('python3');
   });
 
   test('PythonPath_IsNotDefault_EqualSetPath', () => {
