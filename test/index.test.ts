@@ -167,15 +167,84 @@ describe('Execute Commands', () => {
       expect(output).toBe('10');
     });
   
-    test('Execute_BlockCommand_ReturnResult', async () => {
+    test('Execute_IfCommand_ReturnResult', async () => {
       let input = `
-      if True:
-        x = 10
-        print(x)
+      x = 10
+      if x > 5:
+        x = x * 2
 
+      print(x)
       `;
       let output = await python.execute(input);
-      expect(output).toBe('10');
+      expect(output).toBe('20');
+    });
+
+    test('Execute_ForCommand_ReturnResult', async () => {
+      let input = `
+        for i in range(3):
+          print(i)
+
+        `;
+      let output = await python.execute(input);
+      expect(output).toBe('0\n1\n2');
+    });
+
+    test('Execute_NestedForCommand_ReturnResult', async () => {
+      let input = `
+        for i in range(3):
+          for j in range(3):
+            print(i, j)
+
+        `;
+      let output = await python.execute(input);
+      expect(output).toBe('0 0\n0 1\n0 2\n1 0\n1 1\n1 2\n2 0\n2 1\n2 2');
+    });
+
+    test('Execute_ForEachCommand_ReturnResult', async () => {
+      let input = `
+        for i in [0, 1, 2]:
+          print(i)
+
+        `;
+      let output = await python.execute(input);
+      expect(output).toBe('0\n1\n2');
+    });
+
+    test('Execute_WhileCommand_ReturnResult', async () => {
+      let input = `
+        i = 0
+        while i < 3:
+          print(i)
+          i += 1
+
+        `;
+      let output = await python.execute(input);
+      expect(output).toBe('0\n1\n2');
+    });
+
+    test('Execute_FunctionCommand_ReturnResult', async () => {
+      let input = `
+        def test(x):
+          return x + 10
+
+        print(test(10))
+        `;
+      let output = await python.execute(input);
+      expect(output).toBe('20');
+    });
+
+    test('Execute_ClassCommand_ReturnResult', async () => {
+      let input = `
+        class Test:
+          def __init__(self, x):
+            self.x = x
+          def test(self):
+            return self.x + 10
+
+        print(Test(10).test())
+        `;
+      let output = await python.execute(input);
+      expect(output).toBe('20');
     });
   });
 })
