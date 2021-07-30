@@ -131,12 +131,12 @@ describe('Activate/Deactivate Python Process', () => {
   });
 });
 
-describe('Execute Commands', () => {
+describe('Execute Python Commands', () => {
   beforeEach(async () => {
     await python.start();
   });
 
-  describe('Valid', () => {
+  describe('Valid Commands', () => {
     test('Execute_Empty_ReturnEmptyString', async () => {
       let output = await python.execute();
       expect(output).toBe('');
@@ -249,7 +249,7 @@ describe('Execute Commands', () => {
     });
   });
 
-  describe('Invalid', () => {
+  describe('Invalid Commands', () => {
     test('Execute_InvalidNameCommand_ReturnNameError', async () => {
       const NAME_ERROR =
         `Traceback (most recent call last):
@@ -299,6 +299,34 @@ describe('Execute Commands', () => {
         `;
       let output = await python.execute(input).catch((err) => err);
       expect(output).toMatch(dedent(TYPE_ERROR));
+    });
+  });
+
+  describe('Null Streams', () => {
+    test('Execute_NullProcess_ThrowError', async () => {
+      python.stop();
+      await expect(python.execute()).rejects.toThrow(Error);
+    });
+
+    test('Execute_NullStdin_ThrowError', async () => {
+      if(python.pythonProcess) {
+        python.pythonProcess.stdin = null;
+      }
+      await expect(python.execute()).rejects.toThrow(Error);
+    });
+  
+    test('Execute_NullStdout_ThrowError', async () => {
+      if(python.pythonProcess) {
+        python.pythonProcess.stdout = null;
+      }
+      await expect(python.execute()).rejects.toThrow(Error);
+    });
+  
+    test('Execute_NullStderr_ThrowError', async () => {
+      if(python.pythonProcess) {
+        python.pythonProcess.stderr = null;
+      }
+      await expect(python.execute()).rejects.toThrow(Error);
     });
   });
 })
