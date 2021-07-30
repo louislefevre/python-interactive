@@ -10,12 +10,15 @@
 import { PythonInteractive } from '../src/index'
 
 
-describe('Initialise PythonInteractive', () => {
-  let python: PythonInteractive; 
-  beforeEach(() => {
-    python = new PythonInteractive();
-  });
+let python: PythonInteractive; 
+beforeEach(() => {
+  python = new PythonInteractive();
+});
+afterEach(() => {
+  python.stop();
+});
 
+describe('Initialise PythonInteractive', () => {
   test('PythonPath_IsDefault_EqualDefaultPath', () => {
     expect(python.pythonPath).toBe('python' || 'python3');
   });
@@ -34,129 +37,102 @@ describe('Initialise PythonInteractive', () => {
   });
 })
 
-describe('Start Python process', () => {
-  let python: PythonInteractive; 
-  beforeEach(() => {
-    python = new PythonInteractive();
+describe('Start & End Python Process', () => {
+  describe('Start', () => {
+    test('Start_AliveProcess_DoNothing', () => {
+      python.start();
+      let process = python.pythonProcess;
+      python.start();
+      expect(python.pythonProcess).toBe(process);
+    });
+  
+    test('Start_AliveProcess_MaintainScript', () => {
+      python.start();
+      let script = python.script = 'text';
+      python.start();
+      expect(python.script).toBe(script);
+    });
+  
+    test('Start_KilledProcess_SpawnProcess', () => {
+      python.start();
+      expect(python.pythonProcess).not.toBe(null);
+    });
+  
+    test('Start_KilledProcess_ResetScript', () => {
+      python.script = 'text';
+      python.start();
+      expect(python.script).toBe('');
+    });
+  
+    test('Start_NewProcess_ReturnWelcomeMessage', async () => {
+      let output = await python.start();
+      expect(output).toMatch(/^Python 3./);
+    });
   });
-  afterEach(() => {
-    python.stop();
+  
+  describe('Stop', () => {  
+    test('Stop_KilledProcess_DoNothing', () => {
+      let process = python.pythonProcess;
+      python.stop();
+      expect(python.pythonProcess).toBe(process);
+    });
+  
+    test('Stop_KilledProcess_MaintainScript', () => {
+      let script = python.script = 'text';
+      python.stop();
+      expect(python.script).toBe(script);
+    });
+  
+    test('Stop_AliveProcess_KillProcess', () => {
+      python.start();
+      python.stop();
+      expect(python.pythonProcess).toBe(null);
+    });
+  
+    test('Stop_AliveProcess_MaintainScript', () => {
+      python.start();
+      let script = python.script = 'text';
+      python.stop();
+      expect(python.script).toBe(script);
+    });
   });
-
-  test('Start_AliveProcess_DoNothing', () => {
-    python.start();
-    let process = python.pythonProcess;
-    python.start();
-    expect(python.pythonProcess).toBe(process);
-  });
-
-  test('Start_AliveProcess_MaintainScript', () => {
-    python.start();
-    let script = python.script = 'text';
-    python.start();
-    expect(python.script).toBe(script);
-  });
-
-  test('Start_KilledProcess_SpawnProcess', () => {
-    python.start();
-    expect(python.pythonProcess).not.toBe(null);
-  });
-
-  test('Start_KilledProcess_ResetScript', () => {
-    python.script = 'text';
-    python.start();
-    expect(python.script).toBe('');
-  });
-
-  test('Start_NewProcess_ReturnWelcomeMessage', async () => {
-    let output = await python.start();
-    expect(output).toMatch(/^Python 3./);
-  });
-});
-
-describe('Stop Python process', () => {
-  let python: PythonInteractive; 
-  beforeEach(() => {
-    python = new PythonInteractive();
-  });
-  afterEach(() => {
-    python.stop();
-  });
-
-  test('Stop_KilledProcess_DoNothing', () => {
-    let process = python.pythonProcess;
-    python.stop();
-    expect(python.pythonProcess).toBe(process);
-  });
-
-  test('Stop_KilledProcess_MaintainScript', () => {
-    let script = python.script = 'text';
-    python.stop();
-    expect(python.script).toBe(script);
-  });
-
-  test('Stop_AliveProcess_KillProcess', () => {
-    python.start();
-    python.stop();
-    expect(python.pythonProcess).toBe(null);
-  });
-
-  test('Stop_AliveProcess_MaintainScript', () => {
-    python.start();
-    let script = python.script = 'text';
-    python.stop();
-    expect(python.script).toBe(script);
-  });
-});
-
-describe('Restart Python process', () => {
-  let python: PythonInteractive; 
-  beforeEach(() => {
-    python = new PythonInteractive();
-  });
-  afterEach(() => {
-    python.stop();
-  });
-
-  test('Restart_KilledProcess_SpawnProcess', () => {
-    python.restart();
-    expect(python.pythonProcess).not.toBe(null);
-  });
-
-  test('Restart_KilledProcess_ResetScript', () => {
-    python.script = 'text';
-    python.restart();
-    expect(python.script).toBe('');
-  });
-
-  test('Restart_AliveProcess_KillThenSpawnProcess', () => {
-    python.start();
-    let process = python.pythonProcess;
-    python.restart();
-    expect(python.pythonProcess).not.toBe(process);
-  });
-
-  test('Restart_AliveProcess_ResetScript', () => {
-    python.start();
-    python.script = 'text';
-    python.restart();
-    expect(python.script).toBe('');
-  });
-
-  test('Restart_NewProcess_ReturnWelcomeMessage', async () => {
-    let output = await python.restart();
-    expect(output).toMatch(/^Python 3./);
+  
+  describe('Restart', () => {
+    test('Restart_KilledProcess_SpawnProcess', () => {
+      python.restart();
+      expect(python.pythonProcess).not.toBe(null);
+    });
+  
+    test('Restart_KilledProcess_ResetScript', () => {
+      python.script = 'text';
+      python.restart();
+      expect(python.script).toBe('');
+    });
+  
+    test('Restart_AliveProcess_KillThenSpawnProcess', () => {
+      python.start();
+      let process = python.pythonProcess;
+      python.restart();
+      expect(python.pythonProcess).not.toBe(process);
+    });
+  
+    test('Restart_AliveProcess_ResetScript', () => {
+      python.start();
+      python.script = 'text';
+      python.restart();
+      expect(python.script).toBe('');
+    });
+  
+    test('Restart_NewProcess_ReturnWelcomeMessage', async () => {
+      let output = await python.restart();
+      expect(output).toMatch(/^Python 3./);
+    });
   });
 });
 
 describe('Execute commands', () => {
-  let python: PythonInteractive; 
   beforeEach(async () => {
-    python = new PythonInteractive();
     await python.start();
-  });
-  afterEach(() => {
-    python.stop();
   });
 
   test('Execute_Empty_ReturnEmptyString', async () => {
