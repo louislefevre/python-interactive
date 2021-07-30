@@ -16,7 +16,7 @@ export class PythonInteractive {
     this.script = '';
   }
 
-  start(): Promise<string> {
+  async start(): Promise<string> {
     if (!this.pythonProcess) {
       this.pythonProcess = spawn(this.pythonPath, ['-i', '-u']);
       if (this.pythonProcess.stdout && this.pythonProcess.stderr) {
@@ -25,7 +25,7 @@ export class PythonInteractive {
       }
       this.script = '';
     }
-    return this.execute();
+    return this.execute().catch((err) => err);
   }
 
   stop(): void {
@@ -38,12 +38,12 @@ export class PythonInteractive {
     }
   }
 
-  restart(): Promise<string> {
+  async restart(): Promise<string> {
     this.stop();
     return this.start();
   }
 
-  async execute(command?: string, callback?: (err: string | null, data: string | null) => void): Promise<string> {
+  async execute(command?: string): Promise<string> {
     if (!this.pythonProcess) {
       throw new Error('Python process has not been started - call start() or restart() before executing commands.');
     }
@@ -55,9 +55,7 @@ export class PythonInteractive {
     const promise = PythonInteractive.addListeners(this.pythonProcess.stdout, this.pythonProcess.stderr);
     PythonInteractive.sendInput(this.pythonProcess.stdin, command);
 
-    return promise
-      .then((data) => callback !== undefined ? callback(null, data.trim()) : data.trim())
-      .catch((err) => callback !== undefined ? callback(err.trim(), null) : err.trim());
+    return promise;
   }
 
   private static addListeners(stdout: Readable | null, stderr: Readable | null): Promise<string> {
@@ -86,9 +84,9 @@ export class PythonInteractive {
           stdout.removeAllListeners();
           stderr.removeAllListeners();
           if (errorData.trim()) {
-            reject(errorData);
+            reject(errorData.trim());
           } else {
-            resolve(outputData);
+            resolve(outputData.trim());
           }
         }
       });

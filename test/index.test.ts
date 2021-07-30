@@ -63,7 +63,6 @@ describe('Start and stop Python process', () => {
   test('Start_NewProcess_ReturnWelcomeMessage', async () => {
     python.stop();
     let output = await python.start();
-
     expect(output).toMatch(/^Python 3./);
   });
 
@@ -100,7 +99,6 @@ describe('Start and stop Python process', () => {
 
   test('Restart_NewProcess_ReturnWelcomeMessage', async () => {
     let output = await python.restart();
-
     expect(output).toMatch(/^Python 3./);
   });
 });
@@ -116,45 +114,44 @@ describe('Execute commands', () => {
   });
 
   test('Execute_Empty_ReturnEmptyString', async () => {
-    let output = await python.execute();
+    let output = await python.execute().then((data) => data);
     expect(output).toBe('');
   });
 
   test('Execute_StatementCommand_ReturnOutput', async () => {
-    let output = await python.execute('print("Test")');
+    let output = await python.execute('print("Test")').then((data) => data);
     expect(output).toBe('Test');
   });
 
   test('Execute_ExpressionCommand_ReturnResult', async () => {
-    let output = await python.execute('10 + 10');
+    let output = await python.execute('10 + 10').then((data) => data);
     expect(output).toBe('20');
   });
 
   test('Execute_NoOutputStatementCommand_ReturnEmptyString', async () => {
-    let output = await python.execute('x = 10');
+    let output = await python.execute('x = 10').then((data) => data);
     expect(output).toBe('');
   });
 
   test('Execute_MultipleStatementCommand_ReturnResult', async () => {
-    let output = await python.execute('x = 10; print(x)');
+    let output = await python.execute('x = 10; print(x)').then((data) => data);
     expect(output).toBe('10');
   });
 
   test('Execute_SequentialCommands_ReturnResult', async () => {
     await python.execute('x = 10');
-    let output = await python.execute('print(x)');
+    let output = await python.execute('print(x)').then((data) => data);
     expect(output).toBe('10');
   });
 
   test('Execute_BlockCommand_ReturnResult', async () => {
-    expect.assertions(1);
     let input = `
     if True:
       x = 10
       print(x)
 
     `;
-    let output = await python.execute(input);
+    let output = await python.execute(input).then((data) => data);
     expect(output).toBe('10');
   });
 })
