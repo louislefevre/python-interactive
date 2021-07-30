@@ -38,39 +38,37 @@ describe('Start Python process', () => {
   let python: PythonInteractive; 
   beforeEach(() => {
     python = new PythonInteractive();
-    python.start();
-    python.script = 'text';
   });
   afterEach(() => {
     python.stop();
   });
 
   test('Start_AliveProcess_DoNothing', () => {
+    python.start();
     let process = python.pythonProcess;
     python.start();
     expect(python.pythonProcess).toBe(process);
   });
 
   test('Start_AliveProcess_MaintainScript', () => {
-    let script = python.script;
+    python.start();
+    let script = python.script = 'text';
     python.start();
     expect(python.script).toBe(script);
   });
 
   test('Start_KilledProcess_SpawnProcess', () => {
-    python.stop();
     python.start();
     expect(python.pythonProcess).not.toBe(null);
   });
 
   test('Start_KilledProcess_ResetScript', () => {
-    python.stop();
+    python.script = 'text';
     python.start();
     expect(python.script).toBe('');
   });
 
   test('Start_NewProcess_ReturnWelcomeMessage', async () => {
-    python.stop();
     let output = await python.start();
     expect(output).toMatch(/^Python 3./);
   });
@@ -80,34 +78,32 @@ describe('Stop Python process', () => {
   let python: PythonInteractive; 
   beforeEach(() => {
     python = new PythonInteractive();
-    python.start();
-    python.script = 'text';
   });
   afterEach(() => {
     python.stop();
   });
 
   test('Stop_KilledProcess_DoNothing', () => {
-    python.stop();
     let process = python.pythonProcess;
     python.stop();
     expect(python.pythonProcess).toBe(process);
   });
 
   test('Stop_KilledProcess_MaintainScript', () => {
-    python.stop();
-    let script = python.script;
+    let script = python.script = 'text';
     python.stop();
     expect(python.script).toBe(script);
   });
 
   test('Stop_AliveProcess_KillProcess', () => {
+    python.start();
     python.stop();
     expect(python.pythonProcess).toBe(null);
   });
 
   test('Stop_AliveProcess_MaintainScript', () => {
-    let script = python.script;
+    python.start();
+    let script = python.script = 'text';
     python.stop();
     expect(python.script).toBe(script);
   });
@@ -117,32 +113,32 @@ describe('Restart Python process', () => {
   let python: PythonInteractive; 
   beforeEach(() => {
     python = new PythonInteractive();
-    python.start();
-    python.script = 'text';
   });
   afterEach(() => {
     python.stop();
   });
 
   test('Restart_KilledProcess_SpawnProcess', () => {
-    python.stop();
     python.restart();
     expect(python.pythonProcess).not.toBe(null);
   });
 
   test('Restart_KilledProcess_ResetScript', () => {
-    python.stop();
+    python.script = 'text';
     python.restart();
     expect(python.script).toBe('');
   });
 
   test('Restart_AliveProcess_KillThenSpawnProcess', () => {
+    python.start();
     let process = python.pythonProcess;
     python.restart();
     expect(python.pythonProcess).not.toBe(process);
   });
 
   test('Restart_AliveProcess_ResetScript', () => {
+    python.start();
+    python.script = 'text';
     python.restart();
     expect(python.script).toBe('');
   });
