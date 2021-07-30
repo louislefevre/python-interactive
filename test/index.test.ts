@@ -8,6 +8,7 @@
 */
 
 import { PythonInteractive } from '../src/index'
+import dedent = require('dedent-js');
 
 
 let python: PythonInteractive; 
@@ -37,7 +38,7 @@ describe('Initialise PythonInteractive', () => {
   });
 })
 
-describe('Start & End Python Process', () => {
+describe('Activate/Deactivate Python Process', () => {
   describe('Start', () => {
     test('Start_AliveProcess_DoNothing', () => {
       python.start();
@@ -245,6 +246,59 @@ describe('Execute Commands', () => {
         `;
       let output = await python.execute(input);
       expect(output).toBe('20');
+    });
+  });
+
+  describe('Invalid', () => {
+    test('Execute_InvalidNameCommand_ReturnNameError', async () => {
+      const NAME_ERROR =
+        `Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+        NameError: name 'x' is not defined`
+      let output = await python.execute('print(x)').catch((err) => err);
+      expect(output).toMatch(dedent(NAME_ERROR));
+    });
+
+    test('Execute_InvalidIndentedCommand_ReturnIndentationError', async () => {
+      const INDENT_ERROR =
+        `File "<stdin>", line 1
+            print(x)
+        IndentationError: unexpected indent`
+      let output = await python.execute('  print(x)').catch((err) => err);
+      expect(output).toMatch(dedent(INDENT_ERROR));
+    });
+
+    test('Execute_InvalidImportCommand_ReturnImportError', async () => {
+      const IMPORT_ERROR =
+        `Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+        ModuleNotFoundError: No module named 'fake_module'`
+      let output = await python.execute('import fake_module').catch((err) => err);
+      expect(output).toMatch(dedent(IMPORT_ERROR));
+    });
+
+    test('Execute_InvalidSyntaxCommand_ReturnSyntaxError', async () => {
+      const SYNTAX_ERROR =
+        `File "<stdin>", line 1
+            10 = 10
+            ^
+        SyntaxError: cannot assign to literal`
+      let output = await python.execute('10 = 10').catch((err) => err);
+      expect(output).toMatch(dedent(SYNTAX_ERROR));
+    });
+
+    test('Execute_InvalidLoopCommand_ReturnTypeError', async () => {
+      const TYPE_ERROR =
+        `Traceback (most recent call last):
+          File "<stdin>", line 2, in <module>
+        TypeError: can't multiply sequence by non-int of type 'str'`
+      let input = `
+        for i in [0, 1, "2"]:
+          print(i*i)
+
+        `;
+      let output = await python.execute(input).catch((err) => err);
+      expect(output).toMatch(dedent(TYPE_ERROR));
     });
   });
 })
