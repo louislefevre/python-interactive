@@ -34,7 +34,7 @@ describe('Initialise PythonInteractive', () => {
   });
 })
 
-describe('Start and stop Python process', () => {
+describe('Start Python process', () => {
   let python: PythonInteractive; 
   beforeEach(() => {
     python = new PythonInteractive();
@@ -65,6 +65,18 @@ describe('Start and stop Python process', () => {
     let output = await python.start();
     expect(output).toMatch(/^Python 3./);
   });
+});
+
+describe('Stop Python process', () => {
+  let python: PythonInteractive; 
+  beforeEach(() => {
+    python = new PythonInteractive();
+    python.start();
+    python.script = 'text';
+  });
+  afterEach(() => {
+    python.stop();
+  });
 
   test('Stop_KilledProcess_DoNothing', () => {
     python.stop();
@@ -80,6 +92,18 @@ describe('Start and stop Python process', () => {
     python.stop();
     expect(python.pythonProcess).toBe(null);
     expect(python.script).toBe(script);
+  });
+});
+
+describe('Restart Python process', () => {
+  let python: PythonInteractive; 
+  beforeEach(() => {
+    python = new PythonInteractive();
+    python.start();
+    python.script = 'text';
+  });
+  afterEach(() => {
+    python.stop();
   });
 
   test('Restart_KilledProcess_SpawnProcess', () => {
