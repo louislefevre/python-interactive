@@ -27,7 +27,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest --config .jestrc.json",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --write \"**/**/*.ts\"",
     "lint": "eslint . --ext .ts",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint"

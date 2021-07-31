@@ -5,13 +5,12 @@
  * - MethodUnderTest is the name of the method you are testing.
  * - Scenario is the condition under which you test the method.
  * - ExpectedResult is what you expect the method under test to do in the current scenario.
-*/
+ */
 
-import { PythonInteractive } from '../src/index'
+import { PythonInteractive } from '../src/index';
 import dedent = require('dedent-js');
 
-
-let python: PythonInteractive; 
+let python: PythonInteractive;
 beforeEach(() => {
   python = new PythonInteractive();
 });
@@ -36,7 +35,7 @@ describe('Initialise PythonInteractive', () => {
   test('Script_StartsEmpty_ReturnEmptyString', () => {
     expect(python.script).toBe('');
   });
-})
+});
 
 describe('Activate/Deactivate Python Process', () => {
   describe('Start', () => {
@@ -46,19 +45,19 @@ describe('Activate/Deactivate Python Process', () => {
       python.start();
       expect(python.pythonProcess).toBe(process);
     });
-  
+
     test('Start_AliveProcess_MaintainScript', async () => {
       await python.start();
       await python.execute('print("text")');
       python.start();
       expect(python.script).toBe('print("text")');
     });
-  
+
     test('Start_KilledProcess_SpawnProcess', () => {
       python.start();
       expect(python.pythonProcess).not.toBe(null);
     });
-  
+
     test('Start_KilledProcess_ResetScript', async () => {
       await python.start();
       await python.execute('print("text")');
@@ -66,7 +65,7 @@ describe('Activate/Deactivate Python Process', () => {
       python.start();
       expect(python.script).toBe('');
     });
-  
+
     test('Start_NewProcess_ReturnWelcomeMessage', async () => {
       let output = await python.start();
       expect(output).toMatch(/^Python 3./);
@@ -79,27 +78,27 @@ describe('Activate/Deactivate Python Process', () => {
       }).toThrow(Error);
     });
   });
-  
-  describe('Stop', () => {  
+
+  describe('Stop', () => {
     test('Stop_KilledProcess_DoNothing', () => {
       let process = python.pythonProcess;
       python.stop();
       expect(python.pythonProcess).toBe(process);
     });
-  
+
     test('Stop_KilledProcess_MaintainScript', async () => {
       await python.start();
       await python.execute('print("text")');
       python.stop();
       expect(python.script).toBe('print("text")');
     });
-  
+
     test('Stop_AliveProcess_KillProcess', () => {
       python.start();
       python.stop();
       expect(python.pythonProcess).toBe(null);
     });
-  
+
     test('Stop_AliveProcess_MaintainScript', async () => {
       await python.start();
       await python.execute('print("text")');
@@ -114,34 +113,34 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonPath).toBe('path/to/python');
     });
   });
-  
+
   describe('Restart', () => {
     test('Restart_KilledProcess_SpawnProcess', () => {
       python.restart();
       expect(python.pythonProcess).not.toBe(null);
     });
-  
+
     test('Restart_KilledProcess_ResetScript', async () => {
       await python.start();
       await python.execute('print("text")');
       python.restart();
       expect(python.script).toBe('');
     });
-  
+
     test('Restart_AliveProcess_KillThenSpawnProcess', () => {
       python.start();
       let process = python.pythonProcess;
       python.restart();
       expect(python.pythonProcess).not.toBe(process);
     });
-  
+
     test('Restart_AliveProcess_ResetScript', async () => {
       await python.start();
       await python.execute('print("text")');
       python.restart();
       expect(python.script).toBe('');
     });
-  
+
     test('Restart_NewProcess_ReturnWelcomeMessage', async () => {
       let output = await python.restart();
       expect(output).toMatch(/^Python 3./);
@@ -159,33 +158,33 @@ describe('Execute Python Commands', () => {
       let output = await python.execute();
       expect(output).toBe('');
     });
-  
+
     test('Execute_StatementCommand_ReturnOutput', async () => {
       let output = await python.execute('print("Test")');
       expect(output).toBe('Test');
     });
-  
+
     test('Execute_ExpressionCommand_ReturnResult', async () => {
       let output = await python.execute('10 + 10');
       expect(output).toBe('20');
     });
-  
+
     test('Execute_NoOutputStatementCommand_ReturnEmptyString', async () => {
       let output = await python.execute('x = 10');
       expect(output).toBe('');
     });
-  
+
     test('Execute_MultipleStatementCommand_ReturnResult', async () => {
       let output = await python.execute('x = 10; print(x)');
       expect(output).toBe('10');
     });
-  
+
     test('Execute_SequentialCommands_ReturnResult', async () => {
       await python.execute('x = 10');
       let output = await python.execute('print(x)');
       expect(output).toBe('10');
     });
-  
+
     test('Execute_IfCommand_ReturnResult', async () => {
       let input = `
       x = 10
@@ -269,47 +268,42 @@ describe('Execute Python Commands', () => {
 
   describe('Invalid Commands', () => {
     test('Execute_InvalidNameCommand_ReturnNameError', async () => {
-      const NAME_ERROR =
-        `Traceback (most recent call last):
+      const NAME_ERROR = `Traceback (most recent call last):
           File "<stdin>", line 1, in <module>
-        NameError: name 'x' is not defined`
+        NameError: name 'x' is not defined`;
       let output = await python.execute('print(x)').catch((err) => err);
       expect(output).toMatch(dedent(NAME_ERROR));
     });
 
     test('Execute_InvalidIndentedCommand_ReturnIndentationError', async () => {
-      const INDENT_ERROR =
-        `File "<stdin>", line 1
+      const INDENT_ERROR = `File "<stdin>", line 1
             print(x)
-        IndentationError: unexpected indent`
+        IndentationError: unexpected indent`;
       let output = await python.execute('  print(x)').catch((err) => err);
       expect(output).toMatch(dedent(INDENT_ERROR));
     });
 
     test('Execute_InvalidImportCommand_ReturnImportError', async () => {
-      const IMPORT_ERROR =
-        `Traceback (most recent call last):
+      const IMPORT_ERROR = `Traceback (most recent call last):
           File "<stdin>", line 1, in <module>
-        ModuleNotFoundError: No module named 'fake_module'`
+        ModuleNotFoundError: No module named 'fake_module'`;
       let output = await python.execute('import fake_module').catch((err) => err);
       expect(output).toMatch(dedent(IMPORT_ERROR));
     });
 
     test('Execute_InvalidSyntaxCommand_ReturnSyntaxError', async () => {
-      const SYNTAX_ERROR =
-        `File "<stdin>", line 1
+      const SYNTAX_ERROR = `File "<stdin>", line 1
             10 = 10
             ^
-        SyntaxError: cannot assign to literal`
+        SyntaxError: cannot assign to literal`;
       let output = await python.execute('10 = 10').catch((err) => err);
       expect(output).toMatch(dedent(SYNTAX_ERROR));
     });
 
     test('Execute_InvalidLoopCommand_ReturnTypeError', async () => {
-      const TYPE_ERROR =
-        `Traceback (most recent call last):
+      const TYPE_ERROR = `Traceback (most recent call last):
           File "<stdin>", line 2, in <module>
-        TypeError: can't multiply sequence by non-int of type 'str'`
+        TypeError: can't multiply sequence by non-int of type 'str'`;
       let input = `
         for i in [0, 1, "2"]:
           print(i*i)
@@ -327,24 +321,24 @@ describe('Execute Python Commands', () => {
     });
 
     test('Execute_NullStdin_ThrowError', async () => {
-      if(python.pythonProcess) {
+      if (python.pythonProcess) {
         python.pythonProcess.stdin = null;
       }
       await expect(python.execute()).rejects.toThrow(Error);
     });
-  
+
     test('Execute_NullStdout_ThrowError', async () => {
-      if(python.pythonProcess) {
+      if (python.pythonProcess) {
         python.pythonProcess.stdout = null;
       }
       await expect(python.execute()).rejects.toThrow(Error);
     });
-  
+
     test('Execute_NullStderr_ThrowError', async () => {
-      if(python.pythonProcess) {
+      if (python.pythonProcess) {
         python.pythonProcess.stderr = null;
       }
       await expect(python.execute()).rejects.toThrow(Error);
     });
   });
-})
+});
