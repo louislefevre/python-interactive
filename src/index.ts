@@ -81,15 +81,22 @@ export class PythonInteractive {
       let outputData = '';
       let errorData = '';
 
+      stderr.setEncoding('utf8');
+      stderr.on('data', function (data) {
+        data = data.replaceAll('>>>', '');
+        data = data.replaceAll('...', '');
+        errorData += data;
+      });
+
       stdout.setEncoding('utf8');
       stdout.on('data', function (data) {
         let done = false;
 
-        if (data.match(/#CommandStart#/)) {
-          data = data.replace(/#CommandStart#/, '');
+        if (data.includes('#CommandStart#')) {
+          data = data.replace('#CommandStart#', '');
         }
-        if (data.match(/#CommandEnd#/)) {
-          data = data.replace(/#CommandEnd#/, '');
+        if (data.includes('#CommandEnd#')) {
+          data = data.replace('#CommandEnd#', '');
           done = true;
         }
         outputData += data;
@@ -103,24 +110,6 @@ export class PythonInteractive {
             resolve(outputData.trim());
           }
         }
-      });
-
-      stderr.setEncoding('utf8');
-      stderr.on('data', function (data) {
-        if (data.includes('>>>')) {
-          data = data.replace(/>>>/g, '');
-        }
-        if (data.includes('...')) {
-          data = data.replace(/.../g, '');
-        }
-
-        // When the input is a code block, the result will sometimes (seemingly non-deterministicly)
-        // be a single period. This is a workaround to prevent it being added to the output.
-        if (data.trim() === '.') {
-          data = '';
-        }
-
-        errorData += data;
       });
     });
   }
