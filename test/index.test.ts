@@ -47,11 +47,11 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).toBe(process);
     });
   
-    test('Start_AliveProcess_MaintainScript', () => {
+    test('Start_AliveProcess_MaintainScript', async () => {
+      await python.start();
+      await python.execute('print("text")');
       python.start();
-      let script = python.script = 'text';
-      python.start();
-      expect(python.script).toBe(script);
+      expect(python.script).toBe('print("text")');
     });
   
     test('Start_KilledProcess_SpawnProcess', () => {
@@ -59,8 +59,10 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).not.toBe(null);
     });
   
-    test('Start_KilledProcess_ResetScript', () => {
-      python.script = 'text';
+    test('Start_KilledProcess_ResetScript', async () => {
+      await python.start();
+      await python.execute('print("text")');
+      python.stop();
       python.start();
       expect(python.script).toBe('');
     });
@@ -68,6 +70,13 @@ describe('Activate/Deactivate Python Process', () => {
     test('Start_NewProcess_ReturnWelcomeMessage', async () => {
       let output = await python.start();
       expect(output).toMatch(/^Python 3./);
+    });
+
+    test('Start_SetPythonPath_ThrowError', () => {
+      expect(() => {
+        python.start();
+        python.pythonPath = 'path/to/python';
+      }).toThrow(Error);
     });
   });
   
@@ -78,10 +87,11 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).toBe(process);
     });
   
-    test('Stop_KilledProcess_MaintainScript', () => {
-      let script = python.script = 'text';
+    test('Stop_KilledProcess_MaintainScript', async () => {
+      await python.start();
+      await python.execute('print("text")');
       python.stop();
-      expect(python.script).toBe(script);
+      expect(python.script).toBe('print("text")');
     });
   
     test('Stop_AliveProcess_KillProcess', () => {
@@ -90,11 +100,18 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).toBe(null);
     });
   
-    test('Stop_AliveProcess_MaintainScript', () => {
-      python.start();
-      let script = python.script = 'text';
+    test('Stop_AliveProcess_MaintainScript', async () => {
+      await python.start();
+      await python.execute('print("text")');
       python.stop();
-      expect(python.script).toBe(script);
+      expect(python.script).toBe('print("text")');
+    });
+
+    test('Stop_SetPythonPath_SetPath', () => {
+      python.start();
+      python.stop();
+      python.pythonPath = 'path/to/python';
+      expect(python.pythonPath).toBe('path/to/python');
     });
   });
   
@@ -104,8 +121,9 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).not.toBe(null);
     });
   
-    test('Restart_KilledProcess_ResetScript', () => {
-      python.script = 'text';
+    test('Restart_KilledProcess_ResetScript', async () => {
+      await python.start();
+      await python.execute('print("text")');
       python.restart();
       expect(python.script).toBe('');
     });
@@ -117,9 +135,9 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).not.toBe(process);
     });
   
-    test('Restart_AliveProcess_ResetScript', () => {
-      python.start();
-      python.script = 'text';
+    test('Restart_AliveProcess_ResetScript', async () => {
+      await python.start();
+      await python.execute('print("text")');
       python.restart();
       expect(python.script).toBe('');
     });

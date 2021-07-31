@@ -3,31 +3,50 @@ import { Readable, Writable } from 'stream';
 import dedent = require('dedent-js');
 
 export class PythonInteractive {
-  readonly pythonPath: string;
-  pythonProcess: ChildProcess | null;
-  script: string;
+  private _pythonPath: string;
+  private _pythonProcess: ChildProcess | null;
+  private _script: string;
 
   constructor(pythonPath?: string) {
-    this.pythonPath = pythonPath ?? 'python3';
-    this.pythonProcess = null;
-    this.script = '';
+    this._pythonPath = pythonPath ?? 'python3';
+    this._pythonProcess = null;
+    this._script = '';
+  }
+
+  get pythonPath(): string {
+    return this._pythonPath;
+  }
+
+  set pythonPath(path: string) {
+    if (this._pythonProcess) {
+      throw new Error('Cannot set pythonPath while process is running');
+    }
+    this._pythonPath = path;
+  }
+
+  get pythonProcess(): ChildProcess | null {
+    return this._pythonProcess;
+  }
+
+  get script(): string {
+    return this._script.trimStart();
   }
 
   async start(): Promise<string> {
-    if (!this.pythonProcess) {
-      this.pythonProcess = spawn(this.pythonPath, ['-i', '-u']);
-      this.script = '';
+    if (!this._pythonProcess) {
+      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u']);
+      this._script = '';
     }
     return this.execute().catch((err) => err);
   }
 
   stop(): void {
-    if (this.pythonProcess) {
-      if (this.pythonProcess.stdin) this.pythonProcess.stdin.destroy();
-      if (this.pythonProcess.stdout) this.pythonProcess.stdout.destroy();
-      if (this.pythonProcess.stderr) this.pythonProcess.stderr.destroy();
-      this.pythonProcess.kill();
-      this.pythonProcess = null;
+    if (this._pythonProcess) {
+      if (this._pythonProcess.stdin) this._pythonProcess.stdin.destroy();
+      if (this._pythonProcess.stdout) this._pythonProcess.stdout.destroy();
+      if (this._pythonProcess.stderr) this._pythonProcess.stderr.destroy();
+      this._pythonProcess.kill();
+      this._pythonProcess = null;
     }
   }
 
@@ -37,16 +56,16 @@ export class PythonInteractive {
   }
 
   async execute(command?: string): Promise<string> {
-    if (!this.pythonProcess) {
+    if (!this._pythonProcess) {
       throw new Error('Python process has not been started - call start() or restart() before executing commands.');
     }
 
     command = command ? dedent(command) : '';
-    this.script += command;
+    this._script += command;
     command = '\nprint("#CommandStart#")\n' + command + '\nprint("#CommandEnd#")\n';
 
-    const promise = PythonInteractive.addListeners(this.pythonProcess.stdout, this.pythonProcess.stderr);
-    PythonInteractive.sendInput(this.pythonProcess.stdin, command);
+    const promise = PythonInteractive.addListeners(this._pythonProcess.stdout, this._pythonProcess.stderr);
+    PythonInteractive.sendInput(this._pythonProcess.stdin, command);
 
     return promise;
   }
