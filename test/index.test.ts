@@ -276,11 +276,22 @@ describe('Execute Python Commands', () => {
     });
 
     test('Execute_InvalidIndentedCommand_ReturnIndentationError', async () => {
-      const INDENT_ERROR = `File "<stdin>", line 1
+      // The output for the CI pipeline is different and needs a unique string.
+      const INDENT_ERROR_CI = `File "<stdin>", line 1
             print(x)
+            ^
         IndentationError: unexpected indent`;
+
+      const INDENT_ERROR = `File "<stdin>", line 1
+          print(x)
+      IndentationError: unexpected indent`;
+
       let output = await python.execute('  print(x)').catch((err) => err);
-      expect(output).toMatch(dedent(INDENT_ERROR));
+      try {
+        expect(output).toMatch(dedent(INDENT_ERROR_CI));
+      } catch {
+        expect(output).toMatch(dedent(INDENT_ERROR));
+      }
     });
 
     test('Execute_InvalidImportCommand_ReturnImportError', async () => {
@@ -292,12 +303,21 @@ describe('Execute Python Commands', () => {
     });
 
     test('Execute_InvalidSyntaxCommand_ReturnSyntaxError', async () => {
+      // The output for the CI pipeline is different and needs a unique string.
+      const SYNTAX_ERROR_CI = `File "<stdin>", line 1
+        SyntaxError: cannot assign to literal`;
+
       const SYNTAX_ERROR = `File "<stdin>", line 1
             10 = 10
             ^
         SyntaxError: cannot assign to literal`;
+
       let output = await python.execute('10 = 10').catch((err) => err);
-      expect(output).toMatch(dedent(SYNTAX_ERROR));
+      try {
+        expect(output).toMatch(dedent(SYNTAX_ERROR_CI));
+      } catch {
+        expect(output).toMatch(dedent(SYNTAX_ERROR));
+      }
     });
 
     test('Execute_InvalidLoopCommand_ReturnTypeError', async () => {
