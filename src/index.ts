@@ -1,6 +1,7 @@
 import { spawn, ChildProcess } from 'child_process';
 import { Readable, Writable } from 'stream';
 import dedent = require('dedent-js');
+import 'ts-replace-all';
 
 export class PythonInteractive {
   private _pythonPath: string;
