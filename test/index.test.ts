@@ -272,7 +272,7 @@ describe('Execute Python Commands', () => {
           File "<stdin>", line 1, in <module>
         NameError: name 'x' is not defined`;
       let output = await python.execute('print(x)').catch((err) => err);
-      expect(output).toMatch(dedent(NAME_ERROR));
+      expect(output).toBe(dedent(NAME_ERROR));
     });
 
     test('Execute_InvalidIndentedCommand_ReturnIndentationError', async () => {
@@ -288,9 +288,9 @@ describe('Execute Python Commands', () => {
 
       let output = await python.execute('  print(x)').catch((err) => err);
       try {
-        expect(output).toMatch(dedent(INDENT_ERROR_CI));
+        expect(output).toBe(dedent(INDENT_ERROR_CI));
       } catch {
-        expect(output).toMatch(dedent(INDENT_ERROR));
+        expect(output).toBe(dedent(INDENT_ERROR));
       }
     });
 
@@ -299,7 +299,7 @@ describe('Execute Python Commands', () => {
           File "<stdin>", line 1, in <module>
         ModuleNotFoundError: No module named 'fake_module'`;
       let output = await python.execute('import fake_module').catch((err) => err);
-      expect(output).toMatch(dedent(IMPORT_ERROR));
+      expect(output).toBe(dedent(IMPORT_ERROR));
     });
 
     test('Execute_InvalidSyntaxCommand_ReturnSyntaxError', async () => {
@@ -314,9 +314,9 @@ describe('Execute Python Commands', () => {
 
       let output = await python.execute('10 = 10').catch((err) => err);
       try {
-        expect(output).toMatch(dedent(SYNTAX_ERROR_CI));
+        expect(output).toBe(dedent(SYNTAX_ERROR_CI));
       } catch {
-        expect(output).toMatch(dedent(SYNTAX_ERROR));
+        expect(output).toBe(dedent(SYNTAX_ERROR));
       }
     });
 
@@ -330,7 +330,7 @@ describe('Execute Python Commands', () => {
 
         `;
       let output = await python.execute(input).catch((err) => err);
-      expect(output).toMatch(dedent(TYPE_ERROR));
+      expect(output).toBe(dedent(TYPE_ERROR));
     });
   });
 
