@@ -16,7 +16,7 @@ export const IMPORT_ERROR = `Traceback (most recent call last):
 ModuleNotFoundError: No module named 'fake_module'`;
 
 export const SYNTAX_ERROR_CI = `File "<stdin>", line 1
-  SyntaxError: cannot assign to literal`;
+SyntaxError: cannot assign to literal`;
 
 export const SYNTAX_ERROR = `File "<stdin>", line 1
     10 = 10
