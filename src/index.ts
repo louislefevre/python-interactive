@@ -117,8 +117,8 @@ export class PythonInteractive {
         outputData += data;
 
         if (done) {
-          stdout.removeAllListeners();
-          stderr.removeAllListeners();
+          stdout.removeAllListeners('data');
+          stderr.removeAllListeners('data');
           if (errorData.trim()) {
             reject(errorData.trim());
           } else {
