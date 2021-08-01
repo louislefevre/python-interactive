@@ -7,8 +7,8 @@
  * - ExpectedResult is what you expect the method under test to do in the current scenario.
  */
 
+import * as errors from './errors';
 import { PythonInteractive } from '../src/index';
-import dedent = require('dedent-js');
 
 let python: PythonInteractive;
 beforeEach(() => {
@@ -268,68 +268,42 @@ describe('Execute Python Commands', () => {
 
   describe('Invalid Commands', () => {
     test('Execute_InvalidNameCommand_ReturnNameError', async () => {
-      const NAME_ERROR = `Traceback (most recent call last):
-          File "<stdin>", line 1, in <module>
-        NameError: name 'x' is not defined`;
       let output = await python.execute('print(x)').catch((err) => err);
-      expect(output).toBe(dedent(NAME_ERROR));
+      expect(output).toBe(errors.NAME_ERROR);
     });
 
     test('Execute_InvalidIndentedCommand_ReturnIndentationError', async () => {
-      // The output for the CI pipeline is different and needs a unique string.
-      const INDENT_ERROR_CI = `File "<stdin>", line 1
-            print(x)
-            ^
-        IndentationError: unexpected indent`;
-
-      const INDENT_ERROR = `File "<stdin>", line 1
-          print(x)
-      IndentationError: unexpected indent`;
-
       let output = await python.execute('  print(x)').catch((err) => err);
       try {
-        expect(output).toBe(dedent(INDENT_ERROR_CI));
+        // The output for the CI pipeline is different and needs a unique string.
+        expect(output).toBe(errors.INDENT_ERROR_CI);
       } catch {
-        expect(output).toBe(dedent(INDENT_ERROR));
+        expect(output).toBe(errors.INDENT_ERROR);
       }
     });
 
     test('Execute_InvalidImportCommand_ReturnImportError', async () => {
-      const IMPORT_ERROR = `Traceback (most recent call last):
-          File "<stdin>", line 1, in <module>
-        ModuleNotFoundError: No module named 'fake_module'`;
       let output = await python.execute('import fake_module').catch((err) => err);
-      expect(output).toBe(dedent(IMPORT_ERROR));
+      expect(output).toBe(errors.IMPORT_ERROR);
     });
 
     test('Execute_InvalidSyntaxCommand_ReturnSyntaxError', async () => {
-      // The output for the CI pipeline is different and needs a unique string.
-      const SYNTAX_ERROR_CI = `File "<stdin>", line 1
-        SyntaxError: cannot assign to literal`;
-
-      const SYNTAX_ERROR = `File "<stdin>", line 1
-            10 = 10
-            ^
-        SyntaxError: cannot assign to literal`;
-
       let output = await python.execute('10 = 10').catch((err) => err);
       try {
-        expect(output).toBe(dedent(SYNTAX_ERROR_CI));
+        // The output for the CI pipeline is different and needs a unique string.
+        expect(output).toBe(errors.SYNTAX_ERROR_CI);
       } catch {
-        expect(output).toBe(dedent(SYNTAX_ERROR));
+        expect(output).toBe(errors.SYNTAX_ERROR);
       }
     });
 
     test('Execute_InvalidLoopCommand_ReturnTypeError', async () => {
-      const TYPE_ERROR = `Traceback (most recent call last):
-          File "<stdin>", line 2, in <module>
-        TypeError: can't multiply sequence by non-int of type 'str'`;
       let input = `
         for i in [0, 1, "2"]:
           print(i*i)
         `;
       let output = await python.execute(input).catch((err) => err);
-      expect(output).toBe(dedent(TYPE_ERROR));
+      expect(output).toBe(errors.TYPE_ERROR);
     });
   });
 
