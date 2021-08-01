@@ -75,6 +75,7 @@ export class PythonInteractive {
     command =
       'print("#CommandStart#")\n' + //
       `\n${command}\n` +
+      '\nimport sys; sys.stderr.flush()' +
       '\nprint("#CommandEnd#")\n';
 
     return command;
