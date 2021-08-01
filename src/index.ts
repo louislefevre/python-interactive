@@ -61,14 +61,23 @@ export class PythonInteractive {
       throw new Error('Python process has not been started - call start() or restart() before executing commands.');
     }
 
-    command = command ? dedent(command) : '';
-    this._script += command;
-    command = '\nprint("#CommandStart#")\n' + command + '\nprint("#CommandEnd#")\n';
-
+    command = this.formatCommand(command);
     const promise = PythonInteractive.addListeners(this._pythonProcess.stdout, this._pythonProcess.stderr);
     PythonInteractive.sendInput(this._pythonProcess.stdin, command);
 
     return promise;
+  }
+
+  private formatCommand(command: string | undefined): string {
+    command = command ? dedent(command) : '';
+    this._script += command;
+
+    command =
+      'print("#CommandStart#")\n' + //
+      `\n${command}\n` +
+      '\nprint("#CommandEnd#")\n';
+
+    return command;
   }
 
   private static addListeners(stdout: Readable | null, stderr: Readable | null): Promise<string> {
