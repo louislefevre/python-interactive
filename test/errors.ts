@@ -2,11 +2,6 @@ export const NAME_ERROR = `Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 NameError: name 'x' is not defined`;
 
-export const INDENT_ERROR_CI = `File "<stdin>", line 1
-    print(x)
-    ^
-IndentationError: unexpected indent`;
-
 export const INDENT_ERROR = `File "<stdin>", line 1
     print(x)
 IndentationError: unexpected indent`;
@@ -14,9 +9,6 @@ IndentationError: unexpected indent`;
 export const IMPORT_ERROR = `Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 ModuleNotFoundError: No module named 'fake_module'`;
-
-export const SYNTAX_ERROR_CI = `File "<stdin>", line 1
-SyntaxError: cannot assign to literal`;
 
 export const SYNTAX_ERROR = `File "<stdin>", line 1
     10 = 10

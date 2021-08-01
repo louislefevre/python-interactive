@@ -274,12 +274,7 @@ describe('Execute Python Commands', () => {
 
     test('Execute_InvalidIndentedCommand_ReturnIndentationError', async () => {
       let output = await python.execute('  print(x)').catch((err) => err);
-      try {
-        // The output for the CI pipeline is different and needs a unique string.
-        expect(output).toBe(errors.INDENT_ERROR_CI);
-      } catch {
-        expect(output).toBe(errors.INDENT_ERROR);
-      }
+      expect(output).toBe(errors.INDENT_ERROR);
     });
 
     test('Execute_InvalidImportCommand_ReturnImportError', async () => {
@@ -289,12 +284,7 @@ describe('Execute Python Commands', () => {
 
     test('Execute_InvalidSyntaxCommand_ReturnSyntaxError', async () => {
       let output = await python.execute('10 = 10').catch((err) => err);
-      try {
-        // The output for the CI pipeline is different and needs a unique string.
-        expect(output).toBe(errors.SYNTAX_ERROR_CI);
-      } catch {
-        expect(output).toBe(errors.SYNTAX_ERROR);
-      }
+      expect(output).toBe(errors.SYNTAX_ERROR);
     });
 
     test('Execute_InvalidLoopCommand_ReturnTypeError', async () => {
@@ -358,12 +348,7 @@ describe('Execute Python Commands', () => {
         python.execute('10 = 10').catch((err) => err),
         python.execute('10 = 10').catch((err) => err),
       ]);
-      try {
-        // The output for the CI pipeline is different and needs a unique string.
-        expect(outputs).toEqual([errors.SYNTAX_ERROR_CI, errors.SYNTAX_ERROR_CI]);
-      } catch {
-        expect(outputs).toEqual([errors.SYNTAX_ERROR, errors.SYNTAX_ERROR]);
-      }
+      expect(outputs).toEqual([errors.SYNTAX_ERROR, errors.SYNTAX_ERROR]);
     });
 
     test('Execute_ParallelInvalidLoopCommands_ReturnTypeErrors', async () => {
