@@ -1,16 +1,19 @@
 import { spawn, ChildProcess } from 'child_process';
 import { Readable, Writable } from 'stream';
+import { Mutex } from 'async-mutex';
 import dedent = require('dedent-js');
 import 'ts-replace-all';
 
 export class PythonInteractive {
   private _pythonPath: string;
   private _pythonProcess: ChildProcess | null;
+  private _mutex: Mutex;
   private _script: string;
 
   constructor(pythonPath?: string) {
     this._pythonPath = pythonPath ?? 'python3';
     this._pythonProcess = null;
+    this._mutex = new Mutex();
     this._script = '';
   }
 
@@ -57,15 +60,17 @@ export class PythonInteractive {
   }
 
   async execute(command?: string): Promise<string> {
-    if (!this._pythonProcess) {
-      throw new Error('Python process has not been started - call start() or restart() before executing commands.');
-    }
+    return this._mutex.runExclusive(async () => {
+      if (!this._pythonProcess) {
+        throw new Error('Python process has not been started - call start() or restart() before executing commands.');
+      }
 
-    command = this.formatCommand(command);
-    const promise = PythonInteractive.addListeners(this._pythonProcess.stdout, this._pythonProcess.stderr);
-    PythonInteractive.sendInput(this._pythonProcess.stdin, command);
+      command = this.formatCommand(command);
+      let promise = PythonInteractive.addListeners(this._pythonProcess.stdout, this._pythonProcess.stderr);
+      PythonInteractive.sendInput(this._pythonProcess.stdin, command);
 
-    return promise;
+      return promise;
+    });
   }
 
   private formatCommand(command: string | undefined): string {

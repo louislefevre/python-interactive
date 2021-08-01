@@ -33,6 +33,7 @@
     "prepublishOnly": "npm test && npm run lint"
   },
   "dependencies": {
+    "async-mutex": "^0.3.1",
     "dedent-js": "^1.0.1",
     "ts-replace-all": "^1.0.0"
   },
