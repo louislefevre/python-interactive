@@ -309,40 +309,83 @@ describe('Execute Python Commands', () => {
 
   describe('Async Commands', () => {
     test('Execute_ParallelStatementCommands_ReturnOutput', async () => {
-      let results = await Promise.all([
+      let outputs = await Promise.all([
         python.execute('print(1)'),
         python.execute('print(2)'),
         python.execute('print(3)'),
       ]);
-      expect(results).toEqual(['1', '2', '3']);
+      expect(outputs).toEqual(['1', '2', '3']);
     });
 
     test('Execute_ParallelExpressionCommands_ReturnOutput', async () => {
-      let results = await Promise.all([
+      let outputs = await Promise.all([
         python.execute('10 + 10'),
         python.execute('10 * 10'),
         python.execute('10 / 10'),
       ]);
-      expect(results).toEqual(['20', '100', '1.0']);
+      expect(outputs).toEqual(['20', '100', '1.0']);
     });
 
     test('Execute_ParallelSequentialCommands_ReturnOutput', async () => {
-      let results = await Promise.all([
+      let outputs = await Promise.all([
         python.execute('x = 10'),
         python.execute('print(x)'),
         python.execute('x = 20'),
         python.execute('print(x)'),
       ]);
-      expect(results).toEqual(['', '10', '', '20']);
+      expect(outputs).toEqual(['', '10', '', '20']);
     });
 
     test('Execute_ParallelLoopCommands_ReturnOutput', async () => {
-      let results = await Promise.all([
+      let outputs = await Promise.all([
         python.execute('for i in range(0, 3): print(i)'),
         python.execute('for i in range(3, 6): print(i)'),
         python.execute('for i in range(6, 9): print(i)'),
       ]);
-      expect(results).toEqual(['0\n1\n2', '3\n4\n5', '6\n7\n8']);
+      expect(outputs).toEqual(['0\n1\n2', '3\n4\n5', '6\n7\n8']);
+    });
+
+    test('Execute_ParallelInvalidNameCommands_ReturnNameError', async () => {
+      let outputs = await Promise.all([
+        python.execute('print(x)').catch((err) => err),
+        python.execute('print(x)').catch((err) => err),
+      ]);
+      expect(outputs).toEqual([errors.NAME_ERROR, errors.NAME_ERROR]);
+    });
+
+    test('Execute_ParallelInvalidSyntaxCommands_ReturnSyntaxError', async () => {
+      let outputs = await Promise.all([
+        python.execute('10 = 10').catch((err) => err),
+        python.execute('10 = 10').catch((err) => err),
+      ]);
+      try {
+        // The output for the CI pipeline is different and needs a unique string.
+        expect(outputs).toEqual([errors.SYNTAX_ERROR_CI, errors.SYNTAX_ERROR_CI]);
+      } catch {
+        expect(outputs).toEqual([errors.SYNTAX_ERROR, errors.SYNTAX_ERROR]);
+      }
+    });
+
+    test('Execute_ParallelInvalidLoopCommands_ReturnSyntaxError', async () => {
+      let input = `
+        for i in [0, 1, "2"]:
+          print(i*i)
+        `;
+      let outputs = await Promise.all([
+        python.execute(input).catch((err) => err),
+        python.execute(input).catch((err) => err),
+      ]);
+      expect(outputs).toEqual([errors.TYPE_ERROR, errors.TYPE_ERROR]);
+    });
+
+    test('Execute_ParallelMixedCommands_ReturnErrorAndOutput', async () => {
+      let outputs = await Promise.all([
+        python.execute('print(x)').catch((err) => err),
+        python.execute('x = 10'),
+        python.execute('import fake_module').catch((err) => err),
+        python.execute('print(x)'),
+      ]);
+      expect(outputs).toEqual([errors.NAME_ERROR, '', errors.IMPORT_ERROR, '10']);
     });
   });
 
