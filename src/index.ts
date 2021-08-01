@@ -1,7 +1,6 @@
 import { spawn, ChildProcess } from 'child_process';
 import { Readable, Writable } from 'stream';
 import { Mutex } from 'async-mutex';
-import dedent = require('dedent-js');
 import 'ts-replace-all';
 
 export class PythonInteractive {
@@ -74,7 +73,7 @@ export class PythonInteractive {
   }
 
   private formatCommand(command: string | undefined): string {
-    command = command ? dedent(command) : '';
+    command = command ? command : '';
     this._script += command;
 
     command =

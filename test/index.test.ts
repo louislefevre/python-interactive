@@ -9,6 +9,7 @@
 
 import * as errors from './errors';
 import { PythonInteractive } from '../src/index';
+import dedent = require('dedent-js');
 
 let python: PythonInteractive;
 beforeEach(() => {
@@ -186,62 +187,58 @@ describe('Execute Python Commands', () => {
     });
 
     test('Execute_IfCommand_ReturnResult', async () => {
-      let input = `
-      x = 10
-      if x > 5:
-        x = x * 2
+      let input = dedent`
+        x = 10
+        if x > 5:
+          x = x * 2
 
-      print(x)
-      `;
+        print(x)
+        `;
       let output = await python.execute(input);
       expect(output).toBe('20');
     });
 
     test('Execute_ForCommand_ReturnResult', async () => {
-      let input = `
+      let input = dedent`
         for i in range(3):
           print(i)
-
         `;
       let output = await python.execute(input);
       expect(output).toBe('0\n1\n2');
     });
 
     test('Execute_NestedForCommand_ReturnResult', async () => {
-      let input = `
+      let input = dedent`
         for i in range(3):
           for j in range(3):
             print(i, j)
-
         `;
       let output = await python.execute(input);
       expect(output).toBe('0 0\n0 1\n0 2\n1 0\n1 1\n1 2\n2 0\n2 1\n2 2');
     });
 
     test('Execute_ForEachCommand_ReturnResult', async () => {
-      let input = `
+      let input = dedent`
         for i in [0, 1, 2]:
           print(i)
-
         `;
       let output = await python.execute(input);
       expect(output).toBe('0\n1\n2');
     });
 
     test('Execute_WhileCommand_ReturnResult', async () => {
-      let input = `
+      let input = dedent`
         i = 0
         while i < 3:
           print(i)
           i += 1
-
         `;
       let output = await python.execute(input);
       expect(output).toBe('0\n1\n2');
     });
 
     test('Execute_FunctionCommand_ReturnResult', async () => {
-      let input = `
+      let input = dedent`
         def test(x):
           return x + 10
 
@@ -252,7 +249,7 @@ describe('Execute Python Commands', () => {
     });
 
     test('Execute_ClassCommand_ReturnResult', async () => {
-      let input = `
+      let input = dedent`
         class Test:
           def __init__(self, x):
             self.x = x
@@ -288,7 +285,7 @@ describe('Execute Python Commands', () => {
     });
 
     test('Execute_InvalidLoopCommand_ReturnTypeError', async () => {
-      let input = `
+      let input = dedent`
         for i in [0, 1, "2"]:
           print(i*i)
         `;
@@ -352,7 +349,7 @@ describe('Execute Python Commands', () => {
     });
 
     test('Execute_ParallelInvalidLoopCommands_ReturnTypeErrors', async () => {
-      let input = `
+      let input = dedent`
         for i in [0, 1, "2"]:
           print(i*i)
         `;
