@@ -11,6 +11,13 @@ import * as errors from './errors';
 import { PythonInteractive } from '../src/index';
 import dedent = require('dedent-js');
 
+function runWithPlatform(platform: string, callback: () => void): void {
+  let originalPlatform = process.platform;
+  Object.defineProperty(process, 'platform', { value: platform });
+  callback();
+  Object.defineProperty(process, 'platform', { value: originalPlatform });
+}
+
 let python: PythonInteractive;
 beforeEach(() => {
   python = new PythonInteractive();
@@ -20,8 +27,18 @@ afterEach(() => {
 });
 
 describe('Initialise PythonInteractive', () => {
-  test('PythonPath_IsDefault_EqualDefaultPath', () => {
-    expect(python.pythonPath).toBe('python3');
+  test('PythonPath_IsLinuxDefault_EqualDefaultPath', () => {
+    runWithPlatform('linux', () => {
+      python = new PythonInteractive();
+      expect(python.pythonPath).toBe('python3');
+    });
+  });
+
+  test('PythonPath_IsWindowsDefault_EqualDefaultPath', () => {
+    runWithPlatform('win32', () => {
+      python = new PythonInteractive();
+      expect(python.pythonPath).toBe('python');
+    });
   });
 
   test('PythonPath_IsNotDefault_EqualSetPath', () => {

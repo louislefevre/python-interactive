@@ -10,7 +10,7 @@ export class PythonInteractive {
   private _script: string;
 
   constructor(pythonPath?: string) {
-    this._pythonPath = pythonPath ?? 'python3';
+    this._pythonPath = pythonPath ?? (process.platform === 'win32' ? 'python' : 'python3');
     this._pythonProcess = null;
     this._mutex = new Mutex();
     this._script = '';
