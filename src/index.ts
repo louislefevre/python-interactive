@@ -33,14 +33,6 @@ export class PythonInteractive {
     return this._script.trimStart();
   }
 
-  async start(): Promise<string> {
-    if (!this._pythonProcess) {
-      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u']);
-      this._script = '';
-    }
-    return this.execute().catch((err) => err);
-  }
-
   stop(): void {
     if (this._pythonProcess) {
       if (this._pythonProcess.stdin) this._pythonProcess.stdin.destroy();
@@ -49,6 +41,14 @@ export class PythonInteractive {
       this._pythonProcess.kill();
       this._pythonProcess = null;
     }
+  }
+
+  async start(): Promise<string> {
+    if (!this._pythonProcess) {
+      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u']);
+      this._script = '';
+    }
+    return this.execute().catch((err) => err);
   }
 
   async restart(): Promise<string> {
