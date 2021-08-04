@@ -1,6 +1,6 @@
 {
   "name": "python-interactive",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Interactive Python interpreter for executing commands within Node.js",
   "author": "Louis Lefevre",
   "license": "Apache-2.0",
