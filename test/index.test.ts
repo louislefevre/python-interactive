@@ -278,6 +278,19 @@ describe('Execute Python Commands', () => {
       let output = await python.execute(input);
       expect(output).toBe('20');
     });
+
+    test('Execute_InstancedMultipleStatementCommand_ReturnResult', async () => {
+      let python1 = new PythonInteractive();
+      let python2 = new PythonInteractive();
+      await python1.start();
+      await python2.start();
+      await python1.execute('x = 10');
+      await python2.execute('x = 20');
+      let output = await python1.execute('print(x)');
+      python1.stop();
+      python2.stop();
+      expect(output).toBe('10');
+    });
   });
 
   describe('Invalid Commands', () => {
@@ -308,6 +321,18 @@ describe('Execute Python Commands', () => {
         `;
       let output = await python.execute(input).catch((err) => err);
       expect(output).toBe(errors.TYPE_ERROR);
+    });
+
+    test('Execute_InvalidInstancedNameCommand_ReturnsNameError', async () => {
+      let python1 = new PythonInteractive();
+      let python2 = new PythonInteractive();
+      await python1.start();
+      await python2.start();
+      await python1.execute('x = 10');
+      let output = await python2.execute('print(x)').catch((err) => err);
+      python1.stop();
+      python2.stop();
+      expect(output).toBe(errors.NAME_ERROR);
     });
   });
 
@@ -385,6 +410,22 @@ describe('Execute Python Commands', () => {
         python.execute('print(x)'),
       ]);
       expect(outputs).toEqual([errors.NAME_ERROR, '', errors.IMPORT_ERROR, '10']);
+    });
+
+    test('Execute_ParallelInstancedMixedCommands_ReturnsErrorsAndOutputs', async () => {
+      let python1 = new PythonInteractive();
+      let python2 = new PythonInteractive();
+      await python1.start();
+      await python2.start();
+      let outputs = await Promise.all([
+        python1.execute('x = 10'),
+        python2.execute('print("text")'),
+        python1.execute('print(x)'),
+        python2.execute('print(x)').catch((err) => err),
+      ]);
+      python1.stop();
+      python2.stop();
+      expect(outputs).toEqual(['', 'text', '10', errors.NAME_ERROR]);
     });
   });
 
