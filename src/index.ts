@@ -18,8 +18,8 @@ export class PythonInteractive {
    * Each instance of PythonInteractive uses its own process, separate from all other instances.
    * Note that the Python process is not spawned until the start() method is called.
    *
-   * @param {string} pythonPath Path of the Python executable. Uses the default Python interpreter
-   * if not provided.
+   * @param {string} pythonPath Path to the Python interpreter. Uses the systems default Python
+   * interpreter if not provided.
    */
   constructor(pythonPath?: string) {
     this._pythonPath = pythonPath ?? (process.platform === 'win32' ? 'python' : 'python3');
@@ -73,8 +73,8 @@ export class PythonInteractive {
   /**
    * Kills the current Python process.
    *
-   * The current process is killed if there is a process currently running. To spawn a new process,
-   * call the start() method.
+   * The process is killed if there is one currently running. To spawn a new process, call the
+   * start() method.
    */
   stop(): void {
     if (this._pythonProcess) {

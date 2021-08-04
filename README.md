@@ -9,7 +9,7 @@ This module provides a means of using the Python interactive interpreter program
 Commands are executed asynchronously through the use of `async/await`, with results being returned via a Promise. This allows for interactions to be handled differently depending on whether the Python code ran successfully or returned an error.
 
 ## Example
-```js
+```ts
 let {PythonInteractive} = require('python-interactive');
 let python = new PythonInteractive();
 
@@ -58,7 +58,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 ## Usage
 ### Loading the Module
-```js
+```ts
 // ES6 module syntax
 import {PythonInteractive} from 'python-interactive';
 
@@ -68,7 +68,7 @@ let {PythonInteractive} = require('python-interactive');
 Use ES6 `import` or CommonJS `require` to use the PythonInteractive class. 
 
 ### Creating an Instance
-```js
+```ts
 // Use default Python executable
 let python = new PythonInteractive();
 
@@ -85,7 +85,7 @@ Each instance of `PythonInteractive` maintains a single isolated Python interpre
 Optionally, you can initialise the Python interpreter using a specific Python executable. This can be done by passing in a path or command to the constructor.
 
 ### Starting a Python Process
-```js
+```ts
 // Start Python process
 (async () => {
   await python.start();
@@ -107,13 +107,13 @@ Type "help", "copyright", "credits" or "license" for more information.
 ```
 
 ### Stopping a Python Process
-```js
+```ts
 python.stop();
 ```
 To stop the Python process, call the `stop()` method. This will destroy all stdio streams, kill the Python process, then set it to null. When `stop()` is run, commands can no longer be executed until `start()` is called again. This method will not do anything if a process is not running.
 
 ### Restarting a Python Process
-```js
+```ts
 (async () => {
   await python.restart();
 })();
@@ -124,7 +124,7 @@ To restart the Python process, call the `restart()` method. This method acts as 
 Commands can be executed in multiple ways, but should always be done using `async/await` functionality as the result is returned via a Promise. Below are some examples of how commands can be executed. For more examples, take a look at the [test suite](test/).
 
 #### Execute command and ignore output:
-```js
+```ts
 (async () => {
   await python.execute('x = 10');
 })();
@@ -132,7 +132,7 @@ Commands can be executed in multiple ways, but should always be done using `asyn
 This will execute a command but do nothing with its output. However, in this example the `x` variable will still be assigned the value 10, and can be referenced in future command executions. Note that if a command is executed in this manner and causes an error, the error will be thrown (this can be handled using `try/catch` or the `catch()` function).
 
 #### Execute command and retrieve output:
-```js
+```ts
 (async () => {
   let result = await python.execute('print(x)');
 })();
@@ -140,7 +140,7 @@ This will execute a command but do nothing with its output. However, in this exa
 This will execute a command and then save its output to the `result` variable. Since `x` was previously assigned the value 10, executing the command `print(x)` will give the output `10`. This value is then saved to `result`. Note that if a command is executed in this manner and causes an error, the error will be thrown (this can be handled using `try/catch` or the `catch()` function).
 
 #### Execute command and handle output:
-```js
+```ts
 (async () => {
   await python.execute('print(y)')
     .then((data) => {
@@ -160,7 +160,7 @@ NameError: name 'y' is not defined
 ```
 
 #### Execute multiline command:
-```js
+```ts
 let input = `
 i = 0
 while i < 3:
@@ -198,3 +198,36 @@ for i in range(a):
   print(i)
 print(i * i)
 ```
+
+## API
+### `PythonInteractive(pythonPath)`
+Initialises a new instance of `PythonInteractive`.
+
+Each instance of `PythonInteractive` uses its own process, separate from all other instances. Note that the Python process is not spawned until the `start()` method is called.
+
+#### Parameters
+- `pythonPath` (string, optional): path to the Python interpreter. Defaults to `python3` on Unix systems or `python` on Windows.
+
+#### Properties
+- `pythonPath` (string): path to the Python interpreter.
+- `process` (ChildProcess): the Python process.
+- `script` (string): Python script containing all of the commands that have been executed for the current process.
+
+### `start()`
+Spawns a new Python process.
+
+A new process is spawned using the Python interpreter as defined by the `pythonPath` property, though only if no process is currently running. To kill the current process, call `stop()`. Note that the `script` property is reset when calling this method.
+
+Returns a Promise containing a string with the Python interpreter welcome message.
+
+### `stop()`
+Kills the current Python process.
+
+If no process is running, this method will do nothing. To spawn a new process, call the `start()` method.
+
+### `restart()`
+Kills the current Python process and spawns a new one.
+
+This method acts as a wrapper for executing `stop()` and then `start()`. It will only kill a process if there is a process currently running. If not, then only a new process is spawned. Note that the `script` property is reset when calling this method.
+
+Returns a Promise containing a string with the Python interpreter welcome message.
