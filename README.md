@@ -4,7 +4,7 @@
 
 Interactive Python interpreter for executing commands within Node.js.
 
-This package provides a means of using the Python interactive interpreter programmatically from within Node.js, allowing commands to be executed from code as if they were being run in a terminal. 
+This module provides a means of using the Python interactive interpreter programmatically from within Node.js, allowing commands to be executed from code as if they were being run in a terminal.
 
 Commands are executed asynchronously through the use of `async/await`, with results being returned via a Promise. This allows for interactions to be handled differently depending on whether the Python code ran successfully or returned an error.
 
@@ -27,7 +27,7 @@ await (async () => {
   let welcomeMsg = await python.start();
   console.log(welcomeMsg);
 
-  // Import packages and ignore any output (will throw error if code fails to execute)
+  // Import packages and ignore any output
   await python.execute('from math import pi');
 
   // Print value of 'pi' and store the output
@@ -57,14 +57,17 @@ Type "help", "copyright", "credits" or "license" for more information.
 ```
 
 ## Usage
-### Importing PythonInteractive
+### Loading the Module
 ```js
+// ES6 module syntax
 import {PythonInteractive} from 'python-interactive';
+
+// CommonJS module syntax
 let {PythonInteractive} = require('python-interactive');
 ```
-Use `import` or `require` to use the PythonInteractive class.
+Use ES6 `import` or CommonJS `require` to use the PythonInteractive class. 
 
-### Initialising PythonInteractive
+### Creating an Instance
 ```js
 // Use default Python executable
 let python = new PythonInteractive();
@@ -75,7 +78,7 @@ let python = new PythonInteractive('python3.9');
 // Use specific Python executable with path
 let python = new PythonInteractive('/path/to/python');
 ```
-Create a new instance of `PythonInteractive`. By default, the interpreter will be in interactive mode and is called using the `python3` command on Unix systems or `python` on Windows. You must have Python in your PATH for this to work.
+Create a new instance of `PythonInteractive`. By default, the Python interpreter will be spawned in interactive mode and is called using the `python3` command on Unix systems or `python` on Windows. You must have Python in your PATH for this to work.
 
 Each instance of `PythonInteractive` maintains a single isolated Python interpreter process. This allows you to have multiple Python processes running simultaneously whilst ensuring that they do not interfere with one another.
 
@@ -94,7 +97,7 @@ Optionally, you can initialise the Python interpreter using a specific Python ex
   console.log(welcomeMsg);
 })();
 ```
-To start the Python process, use the `start()` method. If this is not done, attempting to execute commands will result in an error being thrown. This method will not do anything if a process is already running. A Promise is returned that will resolve once the process has been started.
+To start the Python process, call the `start()` method. If this is not done, attempting to execute commands will result in an error being thrown. This method will not do anything if a process is already running. A Promise is returned that will resolve once the process has been started.
 
 The Promise being returned also has the added benefit of including the welcome message given by the Python interpreter when starting up. For example, the output of the above code would be:
 ```
@@ -107,7 +110,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 ```js
 python.stop();
 ```
-To stop the Python process, use the `stop()` method. This will destroy all stdio streams, kill the Python process, then set it to null. When `stop()` is run, commands can no longer be executed until `start()` is called again. This method will not do anything if a process is not running.
+To stop the Python process, call the `stop()` method. This will destroy all stdio streams, kill the Python process, then set it to null. When `stop()` is run, commands can no longer be executed until `start()` is called again. This method will not do anything if a process is not running.
 
 ### Restarting a Python Process
 ```js
@@ -115,10 +118,10 @@ To stop the Python process, use the `stop()` method. This will destroy all stdio
   await python.restart();
 })();
 ```
-To restart the Python process, use the `restart()` method. This method acts as a wrapper for calling `stop()` and then `start()`, and provides no additional functionality.
+To restart the Python process, call the `restart()` method. This method acts as a wrapper for calling `stop()` and then `start()`, and provides no additional functionality.
 
 ### Executing Commands
-Commands can be executed in multiple ways, but should always be done using `async/await` functionality as the result is returned as a Promise. Below are some examples of how commands can be executed. For more examples, take a look at the [test suite](test/).
+Commands can be executed in multiple ways, but should always be done using `async/await` functionality as the result is returned via a Promise. Below are some examples of how commands can be executed. For more examples, take a look at the [test suite](test/).
 
 #### Execute command and ignore output:
 ```js
@@ -148,7 +151,7 @@ This will execute a command and then save its output to the `result` variable. S
     })
 })();
 ```
-This will execute a command and then handle the output by attaching callbacks to the returned Promise. If the command executes without an error, the `then()` callback will handle the output. If the command returned an error, the `catch()` callback will handle the output. In this example, the `catch()` callback will be executed (as `y` has not been declared) and will output the following:
+This will execute a command and then handle the output by attaching callbacks to the returned Promise. If the command executes without an error, the `then()` callback will handle the output. If the command returned an error, the `catch()` callback will handle the output. In this example, the `catch()` callback will be executed (as `y` has not been declared) and output the following:
 ```
 Failed to execute with error:
 Traceback (most recent call last):
@@ -172,17 +175,17 @@ print(i*i)
   console.log(`"${result}"`);
 })();
 ```
-It is also possible to execute multiline commands, with any output being concatenated into a single string. For example, the above code will give the output:
+It is also possible to execute multiline commands, with any output being concatenated into a single string. For example, the above code will return the output:
 ```
 "0
 1
 2
 9"
 ```
-Multiline constructs (e.g. loops, functions, classes) must be closed before the code can be executed - you cannot execute individual parts of a construct separately.
+Multiline constructs (e.g. loops, functions, classes) must be closed before the code can be executed - you cannot execute separate parts of a construct individually.
 
 ### Python Interactive Rules
-Note that you must adhere to the rules of the Python interpreter when in interactive mode; indentation and line breaks must be used correctly to represent where constructs end.  For example, this is valid Python code:
+Note that you must adhere to the rules of the Python interpreter when in interactive mode; indentation and line breaks must be used correctly to represent where constructs end. For example, this is valid Python code:
 ```python
 for i in range(a):
   print(i)
