@@ -4,9 +4,9 @@
 
 Interactive Python interpreter for executing commands within Node.js.
 
-This package provides a means of using the Python interactive interpreter programmatically from within Node.js, allowing commands to be executed from code as if they were being run in a terminal. Results are returned via a Promise, so interactions can be handled differently depending on whether the Python code ran successfully or returned an error.
+This package provides a means of using the Python interactive interpreter programmatically from within Node.js, allowing commands to be executed from code as if they were being run in a terminal. 
 
-You must have Python in your PATH to use this package.
+Commands are executed asynchronously through the use of `async/await`, with results being returned via a Promise. This allows for interactions to be handled differently depending on whether the Python code ran successfully or returned an error.
 
 ## Example
 ```js
@@ -75,7 +75,7 @@ let python = new PythonInteractive('python3.9');
 // Use specific Python executable with path
 let python = new PythonInteractive('/path/to/python');
 ```
-Create a new instance of `PythonInteractive`. By default, the interpreter will be in interactive mode and is called using the `python3` command on Unix systems or `python` on Windows.
+Create a new instance of `PythonInteractive`. By default, the interpreter will be in interactive mode and is called using the `python3` command on Unix systems or `python` on Windows. You must have Python in your PATH for this to work.
 
 Each instance of `PythonInteractive` maintains a single isolated Python interpreter process. This allows you to have multiple Python processes running simultaneously whilst ensuring that they do not interfere with one another.
 
@@ -118,7 +118,7 @@ To stop the Python process, use the `stop()` method. This will destroy all stdio
 To restart the Python process, use the `restart()` method. This method acts as a wrapper for calling `stop()` and then `start()`, and provides no additional functionality.
 
 ### Executing Commands
-Commands can be executed in multiple ways, but should always be done using async/await functionality as the result is returned as a Promise. Below are some examples of how commands can be executed.
+Commands can be executed in multiple ways, but should always be done using `async/await` functionality as the result is returned as a Promise. Below are some examples of how commands can be executed. For more examples, take a look at the [test suite](test/).
 
 #### Execute command and ignore output:
 ```js
