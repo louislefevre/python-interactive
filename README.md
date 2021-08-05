@@ -206,7 +206,7 @@ Initialises a new instance of `PythonInteractive`.
 Each instance of `PythonInteractive` uses its own process, separate from all other instances. Note that the Python process is not spawned until the `start()` method is called.
 
 #### Parameters
-- `pythonPath` (string, optional): path to the Python interpreter. Defaults to `python3` on Unix systems or `python` on Windows.
+- `pythonPath` (string): path to the Python interpreter. Defaults to `python3` on Unix systems or `python` on Windows.
 
 #### Properties
 - `pythonPath` (string): path to the Python interpreter.
@@ -231,3 +231,13 @@ Kills the current Python process and spawns a new one.
 This method acts as a wrapper for executing `stop()` and then `start()`. It will only kill a process if there is a process currently running. If not, then only a new process is spawned. Note that the `script` property is reset when calling this method.
 
 Returns a Promise containing a string with the Python interpreter welcome message.
+
+### `execute(command)`
+Executes a string of Python code and returns the output.
+
+Before commands can be executed, the Python process must be spawned using the start() method. An error will be thrown if the Python process has not been started.
+
+Returns a Promise which will resolve with the output if the command executed successfully, or reject with an error message if the command failed.
+
+#### Parameters
+- `command` (string): Python command to be executed. May be a single command or multiple commands separated by line breaks. If undefined, an empty line is executed.
