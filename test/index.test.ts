@@ -412,7 +412,7 @@ describe('Execute Python Commands', () => {
       expect(outputs).toEqual([errors.NAME_ERROR, '', errors.IMPORT_ERROR, '10']);
     });
 
-    xtest('Execute_ParallelInstancedMixedCommands_ReturnsErrorsAndOutputs', async () => {
+    test('Execute_ParallelInstancedMixedCommands_ReturnsErrorsAndOutputs', async () => {
       let python1 = new PythonInteractive();
       let python2 = new PythonInteractive();
       await python1.start();

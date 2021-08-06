@@ -147,15 +147,14 @@ export class PythonInteractive {
     this._script += command;
 
     command =
-      'print("#CommandStart#")\n' + //
-      `\n${command}\n` +
-      '\nfrom sys import stderr as stderr_buffer; stderr_buffer.flush()' +
-      '\nprint("#CommandEnd#")\n';
+      `${command}\n\n` + //
+      'print("#StdoutEnd#")\n' +
+      'from sys import stderr; print("#StderrEnd#", file=stderr)\n';
 
     return command;
   }
 
-  private static addListeners(stdout: Readable | null, stderr: Readable | null): Promise<string> {
+  private static async addListeners(stdout: Readable | null, stderr: Readable | null): Promise<string> {
     return new Promise((resolve, reject) => {
       if (!stdout) {
         throw new Error('Failed to read from standard output stream');
@@ -163,36 +162,43 @@ export class PythonInteractive {
         throw new Error('Failed to read from standard error stream');
       }
 
-      let outputData = '';
-      let errorData = '';
+      let stdoutData = '';
+      let stderrData = '';
+      let stdoutDone = false;
+      let stderrDone = false;
 
-      stderr.setEncoding('utf8');
-      stderr.on('data', function (data) {
-        data = data.replaceAll('>>>', '');
-        data = data.replaceAll('...', '');
-        errorData += data;
-      });
+      let done = function() {
+        stdout.removeAllListeners();
+        stderr.removeAllListeners();
+        if (stderrData.trim()) {
+          reject(stderrData.trim());
+        } else {
+          resolve(stdoutData.trim());
+        }
+      };
 
       stdout.setEncoding('utf8');
-      stdout.on('data', function (data) {
-        let done = false;
-
-        if (data.includes('#CommandStart#')) {
-          data = data.replace('#CommandStart#', '');
+      stdout.on('data', function(data) {
+        stdoutData += data;
+        if (stdoutData.includes('#StdoutEnd#')) {
+          stdoutData = stdoutData.replace('#StdoutEnd#', '');
+          stdoutDone = true;
+          if(stdoutDone && stderrDone) {
+            done();
+          }
         }
-        if (data.includes('#CommandEnd#')) {
-          data = data.replace('#CommandEnd#', '');
-          done = true;
-        }
-        outputData += data;
+      });
 
-        if (done) {
-          stdout.removeAllListeners('data');
-          stderr.removeAllListeners('data');
-          if (errorData.trim()) {
-            reject(errorData.trim());
-          } else {
-            resolve(outputData.trim());
+      stderr.setEncoding('utf8');
+      stderr.on('data', function(data) {
+        stderrData += data;
+        if (stderrData.includes('#StderrEnd#')) {
+          stderrData = stderrData.replaceAll('>>>', '');
+          stderrData = stderrData.replaceAll('...', '');
+          stderrData = stderrData.replace('#StderrEnd#', '');
+          stderrDone = true;
+          if(stdoutDone && stderrDone) {
+            done();
           }
         }
       });
