@@ -147,7 +147,7 @@ export class PythonInteractive {
     this._script += command;
 
     command =
-      `${command}\n\n` + //
+      `${command}\n\n` +
       'from sys import stderr as stderr_buffer\n' +
       'print("#StdoutEnd#")\n' +
       'print("#StderrEnd#", file=stderr_buffer)\n';
@@ -168,7 +168,7 @@ export class PythonInteractive {
       let stdoutDone = false;
       let stderrDone = false;
 
-      let done = function() {
+      let done = function () {
         stdout.removeAllListeners();
         stderr.removeAllListeners();
         if (stderrData.trim()) {
@@ -179,26 +179,26 @@ export class PythonInteractive {
       };
 
       stdout.setEncoding('utf8');
-      stdout.on('data', function(data) {
+      stdout.on('data', function (data) {
         stdoutData += data;
         if (stdoutData.includes('#StdoutEnd#')) {
           stdoutData = stdoutData.replace('#StdoutEnd#', '');
           stdoutDone = true;
-          if(stdoutDone && stderrDone) {
+          if (stdoutDone && stderrDone) {
             done();
           }
         }
       });
 
       stderr.setEncoding('utf8');
-      stderr.on('data', function(data) {
+      stderr.on('data', function (data) {
         stderrData += data;
         if (stderrData.includes('#StderrEnd#')) {
           stderrData = stderrData.replaceAll('>>>', '');
           stderrData = stderrData.replaceAll('...', '');
           stderrData = stderrData.replace('#StderrEnd#', '');
           stderrDone = true;
-          if(stdoutDone && stderrDone) {
+          if (stdoutDone && stderrDone) {
             done();
           }
         }
