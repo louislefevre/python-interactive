@@ -148,8 +148,9 @@ export class PythonInteractive {
 
     command =
       `${command}\n\n` + //
+      'from sys import stderr as stderr_buffer\n' +
       'print("#StdoutEnd#")\n' +
-      'from sys import stderr; print("#StderrEnd#", file=stderr)\n';
+      'print("#StderrEnd#", file=stderr_buffer)\n';
 
     return command;
   }
