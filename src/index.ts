@@ -90,16 +90,7 @@ export class PythonInteractive {
    * @return {Promise<string>} Returns a Promise with the Python interpreter version number.
    */
   async pythonVersion(): Promise<string> {
-    let output = await execute(this._pythonPath + ' -V');
-
-    return new Promise<string>((resolve, reject) => {
-      let version = output.stdout;
-      if (version) {
-        resolve(version);
-      } else {
-        reject(new Error('Failed to determine Python version'));
-      }
-    });
+    return execute(this._pythonPath + ' -V').then((data) => data.stdout.trim());
   }
 
   /**
@@ -110,16 +101,7 @@ export class PythonInteractive {
    * @return {Promise<string>} Returns a Promise with the Python interpreter build information.
    */
   async pythonBuild(): Promise<string> {
-    let output = await execute(this._pythonPath + ' -VV');
-
-    return new Promise<string>((resolve, reject) => {
-      let build = output.stdout;
-      if (build) {
-        resolve(build);
-      } else {
-        reject(new Error('Failed to determine Python build'));
-      }
-    });
+    return execute(this._pythonPath + ' -VV').then((data) => data.stdout.trim());
   }
 
   /**
