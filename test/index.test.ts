@@ -506,6 +506,12 @@ describe('Helper Functions', () => {
       python.pythonPath = '/invalid/python/path';
       await expect(python.pythonVersion()).rejects.toThrow(/^Command failed:/);
     });
+
+    test('PythonVersion_ValidPath_ReturnsVersion', async () => {
+      await python.start();
+      let version = await python.pythonVersion();
+      expect(version).toMatch(/^Python (\d+\.\d+\.\d+)/);
+    });
   });
 
   describe('Python Build', () => {
@@ -517,6 +523,12 @@ describe('Helper Functions', () => {
     test('PythonBuild_InvalidPath_ThrowsError', async () => {
       python.pythonPath = '/invalid/python/path';
       await expect(python.pythonBuild()).rejects.toThrow(/^Command failed:/);
+    });
+
+    test('PythonBuild_ValidPathWhilstRunning_ReturnsBuild', async () => {
+      await python.start();
+      let version = await python.pythonBuild();
+      expect(version).toMatch(/^Python (\d+\.\d+\.\d+) \((.*)\)/);
     });
   });
 });
