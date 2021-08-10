@@ -1,7 +1,10 @@
-import { spawn, ChildProcess } from 'child_process';
+import { spawn, exec, ChildProcess } from 'child_process';
 import { Readable, Writable } from 'stream';
 import { Mutex } from 'async-mutex';
+import { promisify } from 'util';
 import 'ts-replace-all';
+
+const execute = promisify(exec);
 
 /**
  * Interactive Python interpreter for executing commands within Node.js
@@ -79,6 +82,24 @@ export class PythonInteractive {
    */
   get lastCommand(): string {
     return this._lastCommand;
+  }
+
+  /**
+   * Returns the version of the Python interpreter.
+   *
+   * @return {Promise<string>} Returns a Promise with the Python interpreter version number.
+   */
+  async pythonVersion(): Promise<string> {
+    let output = await execute(this._pythonPath + ' -V');
+
+    return new Promise<string>((resolve, reject) => {
+      let version = output.stdout.match(/^Python (\d+\.\d+\.\d+)/);
+      if (version) {
+        resolve(version[1]);
+      } else {
+        reject(new Error('Failed to determine Python version'));
+      }
+    });
   }
 
   /**
