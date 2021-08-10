@@ -78,6 +78,8 @@ export class PythonInteractive {
   /**
    * Get the last Python command that was executed.
    *
+   * This property is reset whenever a new process is spawned with start().
+   *
    * @return {string} Returns a string containing the last command.
    */
   get lastCommand(): string {
@@ -133,6 +135,7 @@ export class PythonInteractive {
     if (!this._pythonProcess) {
       this._pythonProcess = spawn(this._pythonPath, ['-i', '-u']);
       this._script = '';
+      this._lastCommand = '';
     }
     return this.execute().catch((err) => err);
   }
