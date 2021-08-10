@@ -128,14 +128,16 @@ export class PythonInteractive {
    * A new process is spawned using the Python interpreter as defined by the pythonPath property,
    * though only if no process is currently running. To kill the current process, call stop().
    * Note that the script property is reset when calling this method.
+   *
+   * @return {Promise<string>} Returns a Promise with the Python interpreter welcome message.
    */
   async start(): Promise<string> {
     if (!this._pythonProcess) {
-      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q']);
+      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u']);
       this._script = '';
       this._lastCommand = '';
     }
-    return this.execute();
+    return this.execute().catch((err) => err);
   }
 
   /**
@@ -144,6 +146,8 @@ export class PythonInteractive {
    * This method acts as a wrapper for executing stop() and then start(). It will only kill a
    * process if there is a process currently running. If not, then only a new process is spawned.
    * Note that the script property is reset when calling this method.
+   *
+   * @return {Promise<string>} Returns a Promise with the Python interpreter welcome message.
    */
   async restart(): Promise<string> {
     this.stop();
