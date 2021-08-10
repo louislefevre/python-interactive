@@ -517,7 +517,7 @@ describe('Helper Functions', () => {
       await expect(python.pythonVersion()).rejects.toThrow(/^Command failed:/);
     });
 
-    test('PythonVersion_ValidPath_ReturnsVersion', async () => {
+    test('PythonVersion_ValidPathWhilstRunning_ReturnsVersion', async () => {
       await python.start();
       let version = await python.pythonVersion();
       expect(version).toMatch(/^Python (\d+\.\d+\.\d+)/);
