@@ -457,3 +457,29 @@ describe('Execute Python Commands', () => {
     });
   });
 });
+
+describe('Helper Functions', () => {
+  describe('Python Version', () => {
+    test('PythonVersion_ValidPath_ReturnsVersion', async () => {
+      let version = await python.pythonVersion();
+      expect(version).toMatch(/^Python (\d+\.\d+\.\d+)/);
+    });
+
+    test('PythonVersion_InvalidPath_ThrowsError', async () => {
+      python.pythonPath = '/invalid/python/path';
+      await expect(python.pythonVersion()).rejects.toThrow(/^Command failed:/);
+    });
+  });
+
+  describe('Python Build', () => {
+    test('PythonBuild_ValidPath_ReturnsBuild', async () => {
+      let version = await python.pythonBuild();
+      expect(version).toMatch(/^Python (\d+\.\d+\.\d+) \((.*)\)/);
+    });
+
+    test('PythonBuild_InvalidPath_ThrowsError', async () => {
+      python.pythonPath = '/invalid/python/path';
+      await expect(python.pythonBuild()).rejects.toThrow(/^Command failed:/);
+    });
+  });
+});
