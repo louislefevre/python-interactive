@@ -176,9 +176,12 @@ export class PythonInteractive {
   }
 
   private formatCommand(command: string | undefined): string {
-    command = command ? command : '';
-    this._script += command;
-    this._lastCommand = command;
+    if (command) {
+      this._script += command;
+      this._lastCommand = command;
+    } else {
+      command = '';
+    }
 
     command =
       `${command}\n\n` +
