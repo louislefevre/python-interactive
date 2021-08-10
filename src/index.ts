@@ -103,6 +103,26 @@ export class PythonInteractive {
   }
 
   /**
+   * Returns information about the Python interpreter build.
+   *
+   * This method only works with Python 3.6 or greater.
+   *
+   * @return {Promise<string>} Returns a Promise with the Python interpreter build information.
+   */
+  async pythonBuild(): Promise<string> {
+    let output = await execute(this._pythonPath + ' -VV');
+
+    return new Promise<string>((resolve, reject) => {
+      let build = output.stdout;
+      if (build) {
+        resolve(build);
+      } else {
+        reject(new Error('Failed to determine Python build'));
+      }
+    });
+  }
+
+  /**
    * Kills the current Python process.
    *
    * The process is killed if there is one currently running. To spawn a new process, call the
