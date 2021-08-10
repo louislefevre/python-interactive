@@ -11,6 +11,7 @@ export class PythonInteractive {
   private _pythonProcess: ChildProcess | null;
   private _mutex: Mutex;
   private _script: string;
+  private _lastCommand: string;
 
   /**
    * Initialises a new PythonInteractive instance.
@@ -26,6 +27,7 @@ export class PythonInteractive {
     this._pythonProcess = null;
     this._mutex = new Mutex();
     this._script = '';
+    this._lastCommand = '';
   }
 
   /**
@@ -68,6 +70,15 @@ export class PythonInteractive {
    */
   get script(): string {
     return this._script.trimStart();
+  }
+
+  /**
+   * Get the last Python command that was executed.
+   *
+   * @return {string} Returns a string containing the last command.
+   */
+  get lastCommand(): string {
+    return this._lastCommand;
   }
 
   /**
@@ -145,6 +156,7 @@ export class PythonInteractive {
   private formatCommand(command: string | undefined): string {
     command = command ? command : '';
     this._script += command;
+    this._lastCommand = command;
 
     command =
       `${command}\n\n` +
