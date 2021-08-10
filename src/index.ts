@@ -69,7 +69,7 @@ export class PythonInteractive {
    * @return {string} Returns a string containing all executed commands.
    */
   get script(): string {
-    return this._script.trimStart();
+    return this._script;
   }
 
   /**
