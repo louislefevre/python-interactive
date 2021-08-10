@@ -103,11 +103,6 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.lastCommand).toBe('');
     });
 
-    test('Start_NewProcess_ReturnWelcomeMessage', async () => {
-      let output = await python.start();
-      expect(output).toMatch(/^Python 3./);
-    });
-
     test('Start_SetPythonPath_ThrowError', () => {
       expect(() => {
         python.start();
@@ -204,11 +199,6 @@ describe('Activate/Deactivate Python Process', () => {
       await python.execute('print("text")');
       python.restart();
       expect(python.lastCommand).toBe('');
-    });
-
-    test('Restart_NewProcess_ReturnWelcomeMessage', async () => {
-      let output = await python.restart();
-      expect(output).toMatch(/^Python 3./);
     });
   });
 });
