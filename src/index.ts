@@ -93,9 +93,9 @@ export class PythonInteractive {
     let output = await execute(this._pythonPath + ' -V');
 
     return new Promise<string>((resolve, reject) => {
-      let version = output.stdout.match(/^Python (\d+\.\d+\.\d+)/);
+      let version = output.stdout;
       if (version) {
-        resolve(version[1]);
+        resolve(version);
       } else {
         reject(new Error('Failed to determine Python version'));
       }
