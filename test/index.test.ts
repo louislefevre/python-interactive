@@ -62,53 +62,48 @@ describe('Initialise PythonInteractive', () => {
 describe('Activate/Deactivate Python Process', () => {
   describe('Start', () => {
     test('Start_AliveProcess_DoNothing', async () => {
-      await python.start();
+      python.start();
       let process = python.pythonProcess;
-      await python.start();
+      python.start();
       expect(python.pythonProcess).toBe(process);
     });
 
     test('Start_AliveProcess_MaintainScript', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
-      await python.start();
+      python.start();
       expect(python.script).toBe('print("text")');
     });
 
     test('Start_AliveProcess_MaintainLastCommand', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
-      await python.start();
+      python.start();
       expect(python.lastCommand).toBe('print("text")');
     });
 
     test('Start_KilledProcess_SpawnProcess', async () => {
-      await python.start();
+      python.start();
       expect(python.pythonProcess).not.toBe(null);
     });
 
     test('Start_KilledProcess_ResetScript', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
       python.stop();
-      await python.start();
+      python.start();
       expect(python.script).toBe('');
     });
 
     test('Start_KilledProcess_ResetLastCommand', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
       python.stop();
-      await python.start();
+      python.start();
       expect(python.lastCommand).toBe('');
     });
 
-    test('Start_NewProcess_ReturnWelcomeMessage', async () => {
-      let output = await python.start();
-      expect(output).toMatch(/^Python 3./);
-    });
-
-    test('Start_SetPythonPath_ThrowError', () => {
+    test('Start_SetPythonPath_ThrowError', async () => {
       expect(() => {
         python.start();
         python.pythonPath = 'path/to/python';
@@ -124,41 +119,41 @@ describe('Activate/Deactivate Python Process', () => {
     });
 
     test('Stop_KilledProcess_MaintainScript', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
       python.stop();
       expect(python.script).toBe('print("text")');
     });
 
     test('Stop_KilledProcess_MaintainLastCommand', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
       python.stop();
       expect(python.lastCommand).toBe('print("text")');
     });
 
     test('Stop_AliveProcess_KillProcess', async () => {
-      await python.start();
+      python.start();
       python.stop();
       expect(python.pythonProcess).toBe(null);
     });
 
     test('Stop_AliveProcess_MaintainScript', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
       python.stop();
       expect(python.script).toBe('print("text")');
     });
 
     test('Stop_AliveProcess_MaintainLastCommand', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
       python.stop();
       expect(python.lastCommand).toBe('print("text")');
     });
 
     test('Stop_SetPythonPath_SetPath', async () => {
-      await python.start();
+      python.start();
       python.stop();
       python.pythonPath = 'path/to/python';
       expect(python.pythonPath).toBe('path/to/python');
@@ -167,55 +162,50 @@ describe('Activate/Deactivate Python Process', () => {
 
   describe('Restart', () => {
     test('Restart_KilledProcess_SpawnProcess', async () => {
-      await python.restart();
+      python.restart();
       expect(python.pythonProcess).not.toBe(null);
     });
 
     test('Restart_KilledProcess_ResetScript', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
-      await python.restart();
+      python.restart();
       expect(python.script).toBe('');
     });
 
     test('Restart_KilledProcess_ResetLastCommand', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
-      await python.restart();
+      python.restart();
       expect(python.lastCommand).toBe('');
     });
 
     test('Restart_AliveProcess_KillThenSpawnProcess', async () => {
-      await python.start();
+      python.start();
       let process = python.pythonProcess;
-      await python.restart();
+      python.restart();
       expect(python.pythonProcess).not.toBe(process);
     });
 
     test('Restart_AliveProcess_ResetScript', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
-      await python.restart();
+      python.restart();
       expect(python.script).toBe('');
     });
 
     test('Restart_AliveProcess_ResetLastCommand', async () => {
-      await python.start();
+      python.start();
       await python.execute('print("text")');
-      await python.restart();
+      python.restart();
       expect(python.lastCommand).toBe('');
-    });
-
-    test('Restart_NewProcess_ReturnWelcomeMessage', async () => {
-      let output = await python.restart();
-      expect(output).toMatch(/^Python 3./);
     });
   });
 });
 
 describe('Execute Python Commands', () => {
   beforeEach(async () => {
-    await python.start();
+    python.start();
   });
 
   describe('Valid Commands', () => {
@@ -329,8 +319,8 @@ describe('Execute Python Commands', () => {
     test('Execute_InstancedMultipleStatementCommand_ReturnResult', async () => {
       let python1 = new PythonInteractive();
       let python2 = new PythonInteractive();
-      await python1.start();
-      await python2.start();
+      python1.start();
+      python2.start();
       await python1.execute('x = 10');
       await python2.execute('x = 20');
       let output = await python1.execute('print(x)');
@@ -373,8 +363,8 @@ describe('Execute Python Commands', () => {
     test('Execute_InvalidInstancedNameCommand_ReturnsNameError', async () => {
       let python1 = new PythonInteractive();
       let python2 = new PythonInteractive();
-      await python1.start();
-      await python2.start();
+      python1.start();
+      python2.start();
       await python1.execute('x = 10');
       let output = await python2.execute('print(x)').catch((err) => err);
       python1.stop();
@@ -462,8 +452,8 @@ describe('Execute Python Commands', () => {
     test('Execute_ParallelInstancedMixedCommands_ReturnsErrorsAndOutputs', async () => {
       let python1 = new PythonInteractive();
       let python2 = new PythonInteractive();
-      await python1.start();
-      await python2.start();
+      python1.start();
+      python2.start();
       let outputs = await Promise.all([
         python1.execute('x = 10'),
         python2.execute('print("text")'),
@@ -518,7 +508,7 @@ describe('Helper Functions', () => {
     });
 
     test('PythonVersion_ValidPathWhilstRunning_ReturnsVersion', async () => {
-      await python.start();
+      python.start();
       let version = await python.pythonVersion();
       expect(version).toMatch(/^Python (\d+\.\d+\.\d+)/);
     });
@@ -536,7 +526,7 @@ describe('Helper Functions', () => {
     });
 
     test('PythonBuild_ValidPathWhilstRunning_ReturnsBuild', async () => {
-      await python.start();
+      python.start();
       let version = await python.pythonBuild();
       expect(version).toMatch(/^Python (\d+\.\d+\.\d+) \((.*)\)/);
     });
