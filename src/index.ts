@@ -87,23 +87,18 @@ export class PythonInteractive {
   }
 
   /**
-   * Returns the version of the Python interpreter.
+   * Spawns a new Python process.
    *
-   * @return {Promise<string>} Returns a Promise with the Python interpreter version number.
+   * A new process is spawned using the Python interpreter as defined by the pythonPath property,
+   * though only if no process is currently running. To kill the current process, call stop().
+   * Note that the script property is reset when calling this method.
    */
-  async pythonVersion(): Promise<string> {
-    return execute(this._pythonPath + ' -V').then((data) => data.stdout.trim());
-  }
-
-  /**
-   * Returns information about the Python interpreter build.
-   *
-   * This method only works with Python 3.6 or greater.
-   *
-   * @return {Promise<string>} Returns a Promise with the Python interpreter build information.
-   */
-  async pythonBuild(): Promise<string> {
-    return execute(this._pythonPath + ' -VV').then((data) => data.stdout.trim());
+  start(): void {
+    if (!this._pythonProcess) {
+      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q']);
+      this._script = '';
+      this._lastCommand = '';
+    }
   }
 
   /**
@@ -123,21 +118,6 @@ export class PythonInteractive {
   }
 
   /**
-   * Spawns a new Python process.
-   *
-   * A new process is spawned using the Python interpreter as defined by the pythonPath property,
-   * though only if no process is currently running. To kill the current process, call stop().
-   * Note that the script property is reset when calling this method.
-   */
-  start(): void {
-    if (!this._pythonProcess) {
-      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q']);
-      this._script = '';
-      this._lastCommand = '';
-    }
-  }
-
-  /**
    * Kills the current Python process and spawns a new one.
    *
    * This method acts as a wrapper for executing stop() and then start(). It will only kill a
@@ -147,6 +127,26 @@ export class PythonInteractive {
   restart(): void {
     this.stop();
     this.start();
+  }
+
+  /**
+   * Returns the version of the Python interpreter.
+   *
+   * @return {Promise<string>} Returns a Promise with the Python interpreter version number.
+   */
+  async pythonVersion(): Promise<string> {
+    return execute(this._pythonPath + ' -V').then((data) => data.stdout.trim());
+  }
+
+  /**
+   * Returns information about the Python interpreter build.
+   *
+   * This method only works with Python 3.6 or greater.
+   *
+   * @return {Promise<string>} Returns a Promise with the Python interpreter build information.
+   */
+  async pythonBuild(): Promise<string> {
+    return execute(this._pythonPath + ' -VV').then((data) => data.stdout.trim());
   }
 
   /**
