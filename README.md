@@ -215,12 +215,12 @@ Each instance of `PythonInteractive` uses its own process, separate from all oth
 #### Properties
 - `pythonPath` (string): path to the Python interpreter.
 - `process` (ChildProcess): the Python process.
-- `script` (string): Python script containing all of the commands that have been executed for the current process.
+- `history` (Array\<string>): array containing all of the commands that have been executed for the current process.
 
 ### `start()`
 Spawns a new Python process.
 
-A new process is spawned using the Python interpreter as defined by the `pythonPath` property, though only if no process is currently running. To kill the current process, call `stop()`. Note that the `script` property is reset when calling this method.
+A new process is spawned using the Python interpreter as defined by the `pythonPath` property, though only if no process is currently running. To kill the current process, call `stop()`. Note that the `history` property is reset when calling this method.
 
 Returns a Promise containing a string with the Python interpreter welcome message.
 
@@ -232,7 +232,7 @@ If no process is running, this method will do nothing. To spawn a new process, c
 ### `restart()`
 Kills the current Python process and spawns a new one.
 
-This method acts as a wrapper for executing `stop()` and then `start()`. It will only kill a process if there is a process currently running. If not, then only a new process is spawned. Note that the `script` property is reset when calling this method.
+This method acts as a wrapper for executing `stop()` and then `start()`. It will only kill a process if there is a process currently running. If not, then only a new process is spawned. Note that the `history` property is reset when calling this method.
 
 Returns a Promise containing a string with the Python interpreter welcome message.
 

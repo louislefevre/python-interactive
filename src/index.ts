@@ -13,7 +13,7 @@ export class PythonInteractive {
   private _pythonPath: string;
   private _pythonProcess: ChildProcess | null;
   private _mutex: Mutex;
-  private _script: string;
+  private _history: Array<string>;
   private _lastCommand: string;
 
   /**
@@ -29,7 +29,7 @@ export class PythonInteractive {
     this._pythonPath = pythonPath ?? (process.platform === 'win32' ? 'python' : 'python3');
     this._pythonProcess = null;
     this._mutex = new Mutex();
-    this._script = '';
+    this._history = new Array<string>();
     this._lastCommand = '';
   }
 
@@ -65,14 +65,14 @@ export class PythonInteractive {
   }
 
   /**
-   * Get the Python script containing all of the commands that have been executed.
+   * Get the history log containing all of the commands that have been executed.
    *
    * This property is reset whenever a new process is spawned with start().
    *
-   * @return {string} Returns a string containing all executed commands.
+   * @return {Array<string>} Returns an array of strings containing all executed commands.
    */
-  get script(): string {
-    return this._script;
+   get history(): Array<string> {
+    return this._history;
   }
 
   /**
@@ -96,7 +96,7 @@ export class PythonInteractive {
   start(): void {
     if (!this._pythonProcess) {
       this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q']);
-      this._script = '';
+      this._history = new Array<string>();
       this._lastCommand = '';
     }
   }
@@ -176,7 +176,7 @@ export class PythonInteractive {
 
   private formatCommand(command: string | undefined): string {
     if (command) {
-      this._script += command;
+      this._history.push(command);
       this._lastCommand = command;
     } else {
       command = '';

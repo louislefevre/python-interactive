@@ -50,8 +50,8 @@ describe('Initialise PythonInteractive', () => {
     expect(python.pythonProcess).toBe(null);
   });
 
-  test('Script_StartsEmpty_ReturnEmptyString', () => {
-    expect(python.script).toBe('');
+  test('History_StartsEmpty_ReturnEmptyArray', () => {
+    expect(python.history).toHaveLength(0);
   });
 
   test('LastCommand_StartsEmpty_ReturnEmptyString', () => {
@@ -68,11 +68,11 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).toBe(process);
     });
 
-    test('Start_AliveProcess_MaintainScript', async () => {
+    test('Start_AliveProcess_MaintainHistory', async () => {
       python.start();
       await python.execute('print("text")');
       python.start();
-      expect(python.script).toBe('print("text")');
+      expect(python.history[0]).toBe('print("text")');
     });
 
     test('Start_AliveProcess_MaintainLastCommand', async () => {
@@ -87,12 +87,12 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).not.toBe(null);
     });
 
-    test('Start_KilledProcess_ResetScript', async () => {
+    test('Start_KilledProcess_ResetHistory', async () => {
       python.start();
       await python.execute('print("text")');
       python.stop();
       python.start();
-      expect(python.script).toBe('');
+      expect(python.history).toHaveLength(0);
     });
 
     test('Start_KilledProcess_ResetLastCommand', async () => {
@@ -118,11 +118,11 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).toBe(process);
     });
 
-    test('Stop_KilledProcess_MaintainScript', async () => {
+    test('Stop_KilledProcess_MaintainHistory', async () => {
       python.start();
       await python.execute('print("text")');
       python.stop();
-      expect(python.script).toBe('print("text")');
+      expect(python.history[0]).toBe('print("text")');
     });
 
     test('Stop_KilledProcess_MaintainLastCommand', async () => {
@@ -138,11 +138,11 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).toBe(null);
     });
 
-    test('Stop_AliveProcess_MaintainScript', async () => {
+    test('Stop_AliveProcess_MaintainHistory', async () => {
       python.start();
       await python.execute('print("text")');
       python.stop();
-      expect(python.script).toBe('print("text")');
+      expect(python.history[0]).toBe('print("text")');
     });
 
     test('Stop_AliveProcess_MaintainLastCommand', async () => {
@@ -166,11 +166,11 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).not.toBe(null);
     });
 
-    test('Restart_KilledProcess_ResetScript', async () => {
+    test('Restart_KilledProcess_ResetHistory', async () => {
       python.start();
       await python.execute('print("text")');
       python.restart();
-      expect(python.script).toBe('');
+      expect(python.history).toHaveLength(0);
     });
 
     test('Restart_KilledProcess_ResetLastCommand', async () => {
@@ -187,11 +187,11 @@ describe('Activate/Deactivate Python Process', () => {
       expect(python.pythonProcess).not.toBe(process);
     });
 
-    test('Restart_AliveProcess_ResetScript', async () => {
+    test('Restart_AliveProcess_ResetHistory', async () => {
       python.start();
       await python.execute('print("text")');
       python.restart();
-      expect(python.script).toBe('');
+      expect(python.history).toHaveLength(0);
     });
 
     test('Restart_AliveProcess_ResetLastCommand', async () => {
