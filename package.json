@@ -27,6 +27,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest --config .jestrc.json",
+    "test-loop": "for i in {1..100}; do jest --config .jestrc.json --silent || (echo 'Failed after $i attempts' && break); done",
     "format": "prettier --write \"**/**/*.ts\"",
     "lint": "eslint . --ext .ts",
     "prepare": "npm run build",
