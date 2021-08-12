@@ -23,11 +23,10 @@ while pi > 0:
 print(count)
 `;
 
-await (async () => {
-  // Start the Python process and log the welcome message
-  let welcomeMsg = await python.start();
-  console.log(welcomeMsg);
+// Start the Python process
+python.start();
 
+await (async () => {
   // Import packages and ignore any output
   await python.execute('from math import pi');
 
@@ -38,7 +37,7 @@ await (async () => {
   await python.execute(loopCmd)
     .then((data) => {
       // If the Python code executed successfully
-      console.log(`${pi} was halved ${data} times before being less than 0`);
+      console.log(`${pi} was halved ${data} times before being less than or equal to 0`);
     })
     .catch((err) => {
       // If the Python code executed with an error
@@ -50,11 +49,7 @@ await (async () => {
 python.stop();
 ```
 ```
-Python 3.9.6 (default, Jun 30 2021, 10:22:16) 
-[GCC 11.1.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
-
-3.141592653589793 was halved 1077 times before being less than 0
+3.141592653589793 was halved 1077 times before being less than or equal to 0
 ```
 
 ## Usage
@@ -90,25 +85,9 @@ Optionally, you can initialise the Python interpreter using a specific Python ex
 
 ### Starting a Python Process
 ```ts
-// Start Python process
-(async () => {
-  await python.start();
-})();
-
-// Start Python process and log the welcome message
-(async () => {
-  let welcomeMsg = await python.start();
-  console.log(welcomeMsg);
-})();
+python.start();
 ```
-To start the Python process, call the `start()` method. If this is not done, attempting to execute commands will result in an error being thrown. This method will not do anything if a process is already running. A Promise is returned that will resolve once the process has been started.
-
-The Promise being returned also has the added benefit of including the welcome message given by the Python interpreter when starting up. For example, the output of the above code would be:
-```
-Python 3.9.6 (default, Jun 30 2021, 10:22:16) 
-[GCC 11.1.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
-```
+To start the Python process, call the `start()` method. Attempting to execute commands before calling `start()` will result in an error being thrown. This method will not do anything if a process is already running.
 
 ### Stopping a Python Process
 ```ts
@@ -118,9 +97,7 @@ To stop the Python process, call the `stop()` method. This will destroy all stdi
 
 ### Restarting a Python Process
 ```ts
-(async () => {
-  await python.restart();
-})();
+python.restart();
 ```
 To restart the Python process, call the `restart()` method. This method acts as a wrapper for calling `stop()` and then `start()`, and provides no additional functionality.
 
@@ -214,15 +191,14 @@ Each instance of `PythonInteractive` uses its own process, separate from all oth
 
 #### Properties
 - `pythonPath` (string): path to the Python interpreter.
-- `process` (ChildProcess): the Python process.
-- `history` (Array\<string>): array containing all of the commands that have been executed for the current process.
+- `process` (ChildProcess): the current Python interpreter process.
+- `history` (Array\<string>): all commands that have been executed for the current process.
+- `lastCommand` (string): the last command that was executed for the current process.
 
 ### `start()`
 Spawns a new Python process.
 
 A new process is spawned using the Python interpreter as defined by the `pythonPath` property, though only if no process is currently running. To kill the current process, call `stop()`. Note that the `history` property is reset when calling this method.
-
-Returns a Promise containing a string with the Python interpreter welcome message.
 
 ### `stop()`
 Kills the current Python process.
@@ -234,7 +210,13 @@ Kills the current Python process and spawns a new one.
 
 This method acts as a wrapper for executing `stop()` and then `start()`. It will only kill a process if there is a process currently running. If not, then only a new process is spawned. Note that the `history` property is reset when calling this method.
 
-Returns a Promise containing a string with the Python interpreter welcome message.
+### `pythonVersion()`
+Returns the version of the Python interpreter via a Promise.
+
+### `pythonBuild()`
+Returns information about the Python interpreter build via a Promise.
+
+This method only works with Python 3.6 or greater.
 
 ### `execute(command)`
 Executes a string of Python code and returns the output.

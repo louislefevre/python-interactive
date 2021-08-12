@@ -132,7 +132,7 @@ export class PythonInteractive {
   /**
    * Returns the version of the Python interpreter.
    *
-   * @return {Promise<string>} Returns a Promise with the Python interpreter version number.
+   * @return {Promise<string>} Returns a Promise with the Python interpreter version.
    */
   async pythonVersion(): Promise<string> {
     return execute(this._pythonPath + ' -V').then((data) => data.stdout.trim());
