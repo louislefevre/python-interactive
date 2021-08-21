@@ -96,7 +96,7 @@ export class PythonInteractive {
    * The Python interpreter is always spawned with the -i, -u, and -q flags.
    *
    * @param {string[]} args Arguments to pass to the Python interpreter.
-   * @param {SpawnOptionsWithoutStdio} options Options to pass to the spawned process
+   * @param {SpawnOptionsWithoutStdio} options Options to pass to the spawned process.
    */
   start(args?: string[], options?: SpawnOptionsWithoutStdio): void {
     if (!this._pythonProcess) {
@@ -131,7 +131,7 @@ export class PythonInteractive {
    * Note that the script property is reset when calling this method.
    * 
    * @param {string[]} args Arguments to pass to the Python interpreter.
-   * @param {SpawnOptionsWithoutStdio} options Options to pass to the spawned process
+   * @param {SpawnOptionsWithoutStdio} options Options to pass to the spawned process.
    */
   restart(args?: string[], options?: SpawnOptionsWithoutStdio): void {
     this.stop();

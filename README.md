@@ -204,7 +204,7 @@ The Python interpreter is always spawned with the -i, -u, and -q flags.
 
 #### Parameters
 - `args` (string[]): Arguments to pass to the Python interpreter.
-- `options` (Object): Options to pass to the Python interpreter.
+- `options` (Object): Options to pass to the spawned process.
 
 ### `stop()`
 Kills the current Python process.
@@ -218,7 +218,7 @@ This method acts as a wrapper for executing `stop()` and then `start()`. It will
 
 #### Parameters
 - `args` (string[]): Arguments to pass to the Python interpreter.
-- `options` (Object): Options to pass to the Python interpreter.
+- `options` (Object): Options to pass to the spawned process.
 
 ### `pythonVersion()`
 Returns the version of the Python interpreter via a Promise.
