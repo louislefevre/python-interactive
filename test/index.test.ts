@@ -138,7 +138,7 @@ describe('Activate/Deactivate Python Process', () => {
     });
 
     test('Start_SetOptions_SpawnWithSetOptions', async () => {
-      python.start([], {argv0: python.pythonPath});
+      python.start([], { argv0: python.pythonPath });
       let pythonProcess = python.pythonProcess;
       if (!pythonProcess) {
         throw new Error('Python process is null');
