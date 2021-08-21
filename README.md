@@ -200,6 +200,12 @@ Spawns a new Python process.
 
 A new process is spawned using the Python interpreter as defined by the `pythonPath` property, though only if no process is currently running. To kill the current process, call `stop()`. Note that the `history` property is reset when calling this method.
 
+The Python interpreter is always spawned with the -i, -u, and -q flags.
+
+#### Parameters
+- `args` (string[]): Arguments to pass to the Python interpreter.
+- `options` (Object): Options to pass to the Python interpreter.
+
 ### `stop()`
 Kills the current Python process.
 
@@ -209,6 +215,10 @@ If no process is running, this method will do nothing. To spawn a new process, c
 Kills the current Python process and spawns a new one.
 
 This method acts as a wrapper for executing `stop()` and then `start()`. It will only kill a process if there is a process currently running. If not, then only a new process is spawned. Note that the `history` property is reset when calling this method.
+
+#### Parameters
+- `args` (string[]): Arguments to pass to the Python interpreter.
+- `options` (Object): Options to pass to the Python interpreter.
 
 ### `pythonVersion()`
 Returns the version of the Python interpreter via a Promise.

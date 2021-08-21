@@ -1,4 +1,4 @@
-import { spawn, exec, ChildProcess } from 'child_process';
+import { spawn, exec, ChildProcess, SpawnOptionsWithoutStdio } from 'child_process';
 import { Readable, Writable } from 'stream';
 import { Mutex } from 'async-mutex';
 import { promisify } from 'util';
@@ -92,10 +92,16 @@ export class PythonInteractive {
    * A new process is spawned using the Python interpreter as defined by the pythonPath property,
    * though only if no process is currently running. To kill the current process, call stop().
    * Note that the script property is reset when calling this method.
+   * 
+   * The Python interpreter is always spawned with the -i, -u, and -q flags.
+   *
+   * @param {string[]} args Arguments to pass to the Python interpreter.
+   * @param {SpawnOptionsWithoutStdio} options Options to pass to the spawned process
    */
-  start(): void {
+  start(args?: string[], options?: SpawnOptionsWithoutStdio): void {
     if (!this._pythonProcess) {
-      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q']);
+      if (!args) args = [];
+      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q'].concat(args), options);
       this._history = new Array<string>();
       this._lastCommand = '';
     }
@@ -123,10 +129,13 @@ export class PythonInteractive {
    * This method acts as a wrapper for executing stop() and then start(). It will only kill a
    * process if there is a process currently running. If not, then only a new process is spawned.
    * Note that the script property is reset when calling this method.
+   * 
+   * @param {string[]} args Arguments to pass to the Python interpreter.
+   * @param {SpawnOptionsWithoutStdio} options Options to pass to the spawned process
    */
-  restart(): void {
+  restart(args?: string[], options?: SpawnOptionsWithoutStdio): void {
     this.stop();
-    this.start();
+    this.start(args, options);
   }
 
   /**

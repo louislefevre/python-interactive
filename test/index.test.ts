@@ -109,6 +109,42 @@ describe('Activate/Deactivate Python Process', () => {
         python.pythonPath = 'path/to/python';
       }).toThrow(Error);
     });
+
+    test('Start_DefaultArgs_SpawnWithDefaultArgs', async () => {
+      python.start();
+      let pythonProcess = python.pythonProcess;
+      if (!pythonProcess) {
+        throw new Error('Python process is null');
+      }
+      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q']);
+    });
+
+    test('Start_SetArgs_SpawnWithSetArgs', async () => {
+      python.start(['-x']);
+      let pythonProcess = python.pythonProcess;
+      if (!pythonProcess) {
+        throw new Error('Python process is null');
+      }
+      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q', '-x']);
+    });
+
+    test('Start_SetOptions_SpawnWithDefaultOptions', async () => {
+      python.start([], {});
+      let pythonProcess = python.pythonProcess;
+      if (!pythonProcess) {
+        throw new Error('Python process is null');
+      }
+      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q']);
+    });
+
+    test('Start_SetOptions_SpawnWithSetOptions', async () => {
+      python.start([], {argv0: python.pythonPath});
+      let pythonProcess = python.pythonProcess;
+      if (!pythonProcess) {
+        throw new Error('Python process is null');
+      }
+      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q']);
+    });
   });
 
   describe('Stop', () => {
