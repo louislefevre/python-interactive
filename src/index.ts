@@ -214,12 +214,14 @@ export class PythonInteractive {
       let stderrDone = false;
 
       let done = function () {
-        stdout.removeAllListeners();
-        stderr.removeAllListeners();
-        if (stderrData.trim()) {
-          reject(stderrData.trim());
-        } else {
-          resolve(stdoutData.trim());
+        if (stdoutDone && stderrDone) {
+          stdout.removeAllListeners();
+          stderr.removeAllListeners();
+          if (stderrData.trim()) {
+            reject(stderrData.trim());
+          } else {
+            resolve(stdoutData.trim());
+          }
         }
       };
 
@@ -229,9 +231,7 @@ export class PythonInteractive {
         if (stdoutData.includes('#StdoutEnd#')) {
           stdoutData = stdoutData.replace('#StdoutEnd#', '');
           stdoutDone = true;
-          if (stdoutDone && stderrDone) {
-            done();
-          }
+          done();
         }
       });
 
@@ -243,9 +243,7 @@ export class PythonInteractive {
           stderrData = stderrData.replaceAll('...', '');
           stderrData = stderrData.replace('#StderrEnd#', '');
           stderrDone = true;
-          if (stdoutDone && stderrDone) {
-            done();
-          }
+          done();
         }
       });
     });
