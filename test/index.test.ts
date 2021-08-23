@@ -529,6 +529,12 @@ describe('Execute Python Commands', () => {
       await expect(python.execute()).rejects.toThrow(Error);
     });
   });
+
+  describe('End Streams', () => {
+    test('Execute_EndStream_ThrowError', async () => {
+      await expect(python.execute('exit()')).rejects.toThrow(Error);
+    });
+  });
 });
 
 describe('Helper Functions', () => {

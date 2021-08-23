@@ -208,15 +208,14 @@ export class PythonInteractive {
         throw new Error('Failed to read from standard error stream');
       }
 
-      let stdoutData = '';
-      let stderrData = '';
-      let stdoutDone = false;
-      let stderrDone = false;
+      let removeListeners = function () {
+        stdout.removeAllListeners();
+        stderr.removeAllListeners();
+      };
 
       let done = function () {
         if (stdoutDone && stderrDone) {
-          stdout.removeAllListeners();
-          stderr.removeAllListeners();
+          removeListeners();
           if (stderrData.trim()) {
             reject(stderrData.trim());
           } else {
@@ -225,6 +224,12 @@ export class PythonInteractive {
         }
       };
 
+      let stdoutData = '';
+      let stderrData = '';
+      let stdoutDone = false;
+      let stderrDone = false;
+
+      // Standard output streams
       stdout.setEncoding('utf8');
       stdout.on('data', function (data) {
         stdoutData += data;
@@ -235,6 +240,17 @@ export class PythonInteractive {
         }
       });
 
+      stdout.on('end', () => {
+        removeListeners();
+        reject(new Error('Standard output stream ended unexpectedly'));
+      });
+
+      stdout.on('error', (err: Error) => {
+        removeListeners();
+        reject(err);
+      });
+
+      // Standard error streams
       stderr.setEncoding('utf8');
       stderr.on('data', function (data) {
         stderrData += data;
@@ -245,6 +261,16 @@ export class PythonInteractive {
           stderrDone = true;
           done();
         }
+      });
+
+      stderr.on('end', () => {
+        removeListeners();
+        reject(new Error('Standard error stream ended unexpectedly'));
+      });
+
+      stderr.on('error', (err: Error) => {
+        removeListeners();
+        reject(err);
       });
     });
   }
