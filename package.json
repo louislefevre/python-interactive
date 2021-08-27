@@ -26,12 +26,12 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest --config .jestrc.json; rm -r ~/.python_history*",
-    "test-loop": "for i in {1..100}; do jest --config .jestrc.json --silent || (echo 'Failed after $i attempts' && break); done",
+    "test": "jest --config .jestrc.json test/**.test.ts && npm run clean",
+    "test:loop": "for i in {1..100}; do npm test || (echo 'Failed after $i attempts' && break); done",
+    "clean": "rm -r ~/.python_history*",
     "format": "prettier --write \"**/**/*.ts\"",
     "lint": "eslint . --ext .ts",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint"
+    "prepare": "npm run build"
   },
   "dependencies": {
     "async-mutex": "^0.3.1",
