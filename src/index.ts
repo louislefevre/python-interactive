@@ -234,7 +234,7 @@ export class PythonInteractive {
       stdout.on('data', function (data) {
         stdoutData += data;
         if (stdoutData.includes('#StdoutEnd#')) {
-          stdoutData = stdoutData.replace('#StdoutEnd#', '');
+          stdoutData = stdoutData.replaceAll('#StdoutEnd#', '');
           stdoutDone = true;
           done();
         }
@@ -257,14 +257,9 @@ export class PythonInteractive {
         if (stderrData.includes('#StderrEnd#')) {
           stderrData = stderrData.replaceAll('>>>', '');
           stderrData = stderrData.replaceAll('...', '');
-          stderrData = stderrData.replace('#StderrEnd#', '');
+          stderrData = stderrData.replaceAll('#StderrEnd#', '');
+          stderrData = stderrData.replaceAll(/(\s+>+\s+)|(^>+)|(>+$)/g, '');
           stderrDone = true;
-
-          // Remove '>' if it is only character in the string
-          if (stderrData.includes('>') && !stderrData.replaceAll('>', '').trim()) {
-            stderrData = stderrData.replaceAll('>', '');
-          }
-
           done();
         }
       });
