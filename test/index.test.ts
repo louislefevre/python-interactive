@@ -11,6 +11,25 @@ import * as errors from './errors';
 import { PythonInteractive } from '../src/index';
 import dedent = require('dedent-js');
 
+const convertNewline = `
+import sys
+sys.stdout = open(sys.__stdout__.fileno(),
+				  mode=sys.__stdout__.mode,
+				  buffering=1,
+				  encoding=sys.__stdout__.encoding,
+				  errors=sys.__stdout__.errors,
+				  newline='\\n',
+				  closefd=False)
+
+sys.stderr = open(sys.__stderr__.fileno(),
+				  mode=sys.__stderr__.mode,
+				  buffering=1,
+				  encoding=sys.__stderr__.encoding,
+				  errors=sys.__stderr__.errors,
+				  newline='\\n',
+				  closefd=False)
+`;
+
 function runWithPlatform(platform: string, callback: () => void): void {
   let originalPlatform = process.platform;
   Object.defineProperty(process, 'platform', { value: platform });
@@ -242,6 +261,9 @@ describe('Activate/Deactivate Python Process', () => {
 describe('Execute Python Commands', () => {
   beforeEach(async () => {
     python.start();
+    if (process.platform === 'win32') {
+      await python.execute(convertNewline);
+    }
   });
 
   describe('Valid Commands', () => {
@@ -397,13 +419,10 @@ describe('Execute Python Commands', () => {
     });
 
     test('Execute_InvalidInstancedNameCommand_ReturnsNameError', async () => {
-      let python1 = new PythonInteractive();
       let python2 = new PythonInteractive();
-      python1.start();
       python2.start();
-      await python1.execute('x = 10');
-      let output = await python2.execute('print(x)').catch((err) => err);
-      python1.stop();
+      await python2.execute('x = 10');
+      let output = await python.execute('print(x)').catch((err) => err);
       python2.stop();
       expect(output).toBe(errors.NAME_ERROR);
     });
@@ -486,17 +505,14 @@ describe('Execute Python Commands', () => {
     });
 
     test('Execute_ParallelInstancedMixedCommands_ReturnsErrorsAndOutputs', async () => {
-      let python1 = new PythonInteractive();
       let python2 = new PythonInteractive();
-      python1.start();
       python2.start();
       let outputs = await Promise.all([
-        python1.execute('x = 10'),
-        python2.execute('print("text")'),
-        python1.execute('print(x)'),
-        python2.execute('print(x)').catch((err) => err),
+        python2.execute('x = 10'),
+        python.execute('print("text")'),
+        python2.execute('print(x)'),
+        python.execute('print(x)').catch((err) => err),
       ]);
-      python1.stop();
       python2.stop();
       expect(outputs).toEqual(['', 'text', '10', errors.NAME_ERROR]);
     });
