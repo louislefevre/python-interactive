@@ -259,6 +259,12 @@ export class PythonInteractive {
           stderrData = stderrData.replaceAll('...', '');
           stderrData = stderrData.replace('#StderrEnd#', '');
           stderrDone = true;
+
+          // Remove '>' if it is only character in the string
+          if (stderrData.includes('>') && !stderrData.replaceAll('>', '').trim()) {
+            stderrData = stderrData.replaceAll('>', '');
+          }
+
           done();
         }
       });
