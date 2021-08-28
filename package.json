@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest --config .jestrc.json test/index.test.ts && npm run clean",
+    "test": "jest --config .jestrc.json test/**.test.ts",
     "test:loop": "for i in {1..100}; do npm test || (echo 'Failed after $i attempts' && break); done",
     "clean": "rm -r ~/.python_history*",
     "format": "prettier --write \"**/**/*.ts\"",
