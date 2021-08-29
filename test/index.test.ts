@@ -349,6 +349,20 @@ describe('Execute Python Commands', () => {
       expect(output).toBe('0\n1\n2');
     });
 
+    test('Execute_YieldCommand_ReturnResult', async () => {
+      let input = dedent`
+        def test():
+          yield 0
+          yield 1
+          yield 2
+        
+        for i in test():
+          print(i)
+        `;
+      let output = await python.execute(input);
+      expect(output).toBe('0\n1\n2');
+    });
+
     test('Execute_FunctionCommand_ReturnResult', async () => {
       let input = dedent`
         def test(x):
