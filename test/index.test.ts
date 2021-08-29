@@ -14,20 +14,20 @@ import dedent = require('dedent-js');
 const convertNewline = `
 import sys
 sys.stdout = open(sys.__stdout__.fileno(),
-				  mode=sys.__stdout__.mode,
-				  buffering=1,
-				  encoding=sys.__stdout__.encoding,
-				  errors=sys.__stdout__.errors,
-				  newline='\\n',
-				  closefd=False)
+                  mode=sys.__stdout__.mode,
+                  buffering=1,
+                  encoding=sys.__stdout__.encoding,
+                  errors=sys.__stdout__.errors,
+                  newline='\\n',
+                  closefd=False)
 
 sys.stderr = open(sys.__stderr__.fileno(),
-				  mode=sys.__stderr__.mode,
-				  buffering=1,
-				  encoding=sys.__stderr__.encoding,
-				  errors=sys.__stderr__.errors,
-				  newline='\\n',
-				  closefd=False)
+                  mode=sys.__stderr__.mode,
+                  buffering=1,
+                  encoding=sys.__stderr__.encoding,
+                  errors=sys.__stderr__.errors,
+                  newline='\\n',
+                  closefd=False)
 `;
 
 function runWithPlatform(platform: string, callback: () => void): void {
