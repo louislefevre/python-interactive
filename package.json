@@ -35,8 +35,7 @@
   },
   "dependencies": {
     "async-mutex": "^0.3.2",
-    "cross-spawn": "^7.0.3",
-    "ts-replace-all": "^1.0.0"
+    "cross-spawn": "^7.0.3"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",

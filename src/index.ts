@@ -2,7 +2,6 @@ import { spawn, exec, ChildProcess, SpawnOptionsWithoutStdio } from 'child_proce
 import { Readable, Writable } from 'stream';
 import { Mutex } from 'async-mutex';
 import { promisify } from 'util';
-import 'ts-replace-all';
 
 const execute = promisify(exec);
 
@@ -233,7 +232,7 @@ export class PythonInteractive {
       stdout.on('data', function (data) {
         stdoutData += data;
         if (stdoutData.includes('#StdoutEnd#')) {
-          stdoutData = stdoutData.replaceAll('#StdoutEnd#', '');
+          stdoutData = stdoutData.replace(/#StdoutEnd#/g, '');
           stdoutDone = true;
           done();
         }
@@ -254,7 +253,7 @@ export class PythonInteractive {
       stderr.on('data', function (data) {
         stderrData += data;
         if (stderrData.includes('#StderrEnd#')) {
-          stderrData = stderrData.replaceAll('#StderrEnd#', '');
+          stderrData = stderrData.replace(/#StderrEnd#/g, '');
           stderrDone = true;
           done();
         }
