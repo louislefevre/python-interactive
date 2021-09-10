@@ -1,4 +1,5 @@
-import { spawn, exec, ChildProcess, SpawnOptionsWithoutStdio } from 'child_process';
+import { exec, ChildProcess, SpawnOptionsWithoutStdio } from 'child_process';
+import { spawn } from 'cross-spawn';
 import { Readable, Writable } from 'stream';
 import { Mutex } from 'async-mutex';
 import { promisify } from 'util';
@@ -104,6 +105,10 @@ export class PythonInteractive {
       this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q'].concat(args), options);
       this._history = new Array<string>();
       this._lastCommand = '';
+
+      if (!this._pythonProcess.pid) {
+        throw new Error("Python process failed to spawn");
+      }
     }
   }
 

@@ -164,6 +164,13 @@ describe('Activate/Deactivate Python Process', () => {
       }
       expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q']);
     });
+
+    test('Start_InvalidPythonPath_ThrowError', async () => {
+      expect(() => {
+        python.pythonPath = 'python4';
+        python.start();
+      }).toThrow(Error);
+    });
   });
 
   describe('Stop', () => {
