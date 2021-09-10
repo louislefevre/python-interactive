@@ -207,6 +207,11 @@ export class PythonInteractive {
         throw new Error('Failed to read from standard error stream');
       }
 
+      let stdoutData = '';
+      let stderrData = '';
+      let stdoutDone = false;
+      let stderrDone = false;
+
       let removeListeners = function () {
         stdout.removeAllListeners();
         stderr.removeAllListeners();
@@ -222,11 +227,6 @@ export class PythonInteractive {
           }
         }
       };
-
-      let stdoutData = '';
-      let stderrData = '';
-      let stdoutDone = false;
-      let stderrDone = false;
 
       // Standard output streams
       stdout.setEncoding('utf8');
