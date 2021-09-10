@@ -35,9 +35,11 @@
   },
   "dependencies": {
     "async-mutex": "^0.3.2",
+    "cross-spawn": "^7.0.3",
     "ts-replace-all": "^1.0.0"
   },
   "devDependencies": {
+    "@types/cross-spawn": "^6.0.2",
     "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
