@@ -30,6 +30,8 @@ sys.stderr = open(sys.__stderr__.fileno(),
                   closefd=False)
 `;
 
+const initCode = 'import sys; sys.ps1 = ""; sys.ps2 = ""'
+
 function runWithPlatform(platform: string, callback: () => void): void {
   let originalPlatform = process.platform;
   Object.defineProperty(process, 'platform', { value: platform });
@@ -135,7 +137,7 @@ describe('Activate/Deactivate Python Process', () => {
       if (!pythonProcess) {
         throw new Error('Python process is null');
       }
-      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q']);
+      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q', '-c', initCode]);
     });
 
     test('Start_SetArgs_SpawnWithSetArgs', async () => {
@@ -144,7 +146,7 @@ describe('Activate/Deactivate Python Process', () => {
       if (!pythonProcess) {
         throw new Error('Python process is null');
       }
-      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q', '-x']);
+      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q', '-c', initCode, '-x']);
     });
 
     test('Start_SetOptions_SpawnWithDefaultOptions', async () => {
@@ -153,7 +155,7 @@ describe('Activate/Deactivate Python Process', () => {
       if (!pythonProcess) {
         throw new Error('Python process is null');
       }
-      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q']);
+      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q', '-c', initCode]);
     });
 
     test('Start_SetOptions_SpawnWithSetOptions', async () => {
@@ -162,7 +164,7 @@ describe('Activate/Deactivate Python Process', () => {
       if (!pythonProcess) {
         throw new Error('Python process is null');
       }
-      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q']);
+      expect(pythonProcess.spawnargs).toEqual([python.pythonPath, '-i', '-u', '-q', '-c', initCode]);
     });
   });
 

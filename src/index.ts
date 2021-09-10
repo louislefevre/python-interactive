@@ -98,10 +98,10 @@ export class PythonInteractive {
    * @param {string[]} args Arguments to pass to the Python interpreter.
    * @param {SpawnOptionsWithoutStdio} options Options to pass to the spawned process.
    */
-  start(args?: string[], options?: SpawnOptionsWithoutStdio): void {
+  start(args: string[] = [], options?: SpawnOptionsWithoutStdio): void {
     if (!this._pythonProcess) {
-      if (!args) args = [];
-      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q'].concat(args), options);
+      let initCode = 'import sys; sys.ps1 = ""; sys.ps2 = ""'
+      this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q', '-c', initCode].concat(args), options);
       this._history = new Array<string>();
       this._lastCommand = '';
     }
@@ -193,9 +193,8 @@ export class PythonInteractive {
 
     command =
       `${command}\n\n` +
-      'from sys import stderr as stderr_buffer\n' +
       'print("#StdoutEnd#")\n' +
-      'print("#StderrEnd#", file=stderr_buffer)\n';
+      'print("#StderrEnd#", file=sys.stderr)\n';
 
     return command;
   }
@@ -255,10 +254,7 @@ export class PythonInteractive {
       stderr.on('data', function (data) {
         stderrData += data;
         if (stderrData.includes('#StderrEnd#')) {
-          stderrData = stderrData.replaceAll('>>>', '');
-          stderrData = stderrData.replaceAll('...', '');
           stderrData = stderrData.replaceAll('#StderrEnd#', '');
-          stderrData = stderrData.replaceAll(/(\s+>+\s+)|(^>+)|(>+$)/g, '');
           stderrDone = true;
           done();
         }
