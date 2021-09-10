@@ -412,7 +412,7 @@ describe('Execute Python Commands', () => {
 
     test('Execute_InvalidIndentedCommand_ReturnIndentationError', async () => {
       let output = await python.execute('  print(x)').catch((err) => err);
-      expect(output).toBe(errors.INDENT_ERROR);
+      expect(errors.INDENT_ERRORS).toContain(output);
     });
 
     test('Execute_InvalidImportCommand_ReturnImportError', async () => {
@@ -422,7 +422,7 @@ describe('Execute Python Commands', () => {
 
     test('Execute_InvalidSyntaxCommand_ReturnSyntaxError', async () => {
       let output = await python.execute('10 = 10').catch((err) => err);
-      expect(output).toBe(errors.SYNTAX_ERROR);
+      expect(errors.SYNTAX_ERRORS).toContain(output);
     });
 
     test('Execute_InvalidLoopCommand_ReturnTypeError', async () => {
@@ -495,7 +495,8 @@ describe('Execute Python Commands', () => {
         python.execute('10 = 10').catch((err) => err),
         python.execute('10 = 10').catch((err) => err),
       ]);
-      expect(outputs).toEqual([errors.SYNTAX_ERROR, errors.SYNTAX_ERROR]);
+      expect(errors.SYNTAX_ERRORS).toContain(outputs[0]);
+      expect(errors.SYNTAX_ERRORS).toContain(outputs[1]);
     });
 
     test('Execute_ParallelInvalidLoopCommands_ReturnTypeErrors', async () => {
