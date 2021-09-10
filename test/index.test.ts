@@ -30,7 +30,7 @@ sys.stderr = open(sys.__stderr__.fileno(),
                   closefd=False)
 `;
 
-const initCode = 'import sys; sys.ps1 = ""; sys.ps2 = ""'
+const initCode = 'import sys; sys.ps1 = ""; sys.ps2 = ""';
 
 function runWithPlatform(platform: string, callback: () => void): void {
   let originalPlatform = process.platform;

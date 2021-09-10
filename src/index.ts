@@ -99,7 +99,7 @@ export class PythonInteractive {
    */
   start(args: string[] = [], options?: SpawnOptionsWithoutStdio): void {
     if (!this._pythonProcess) {
-      let initCode = 'import sys; sys.ps1 = ""; sys.ps2 = ""'
+      let initCode = 'import sys; sys.ps1 = ""; sys.ps2 = ""';
       this._pythonProcess = spawn(this._pythonPath, ['-i', '-u', '-q', '-c', initCode].concat(args), options);
       this._history = new Array<string>();
       this._lastCommand = '';
@@ -190,10 +190,7 @@ export class PythonInteractive {
       command = '';
     }
 
-    command =
-      `${command}\n\n` +
-      'print("#StdoutEnd#")\n' +
-      'print("#StderrEnd#", file=sys.stderr)\n';
+    command = `${command}\n\n` + 'print("#StdoutEnd#")\n' + 'print("#StderrEnd#", file=sys.stderr)\n';
 
     return command;
   }
